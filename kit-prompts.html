@@ -46,9 +46,11 @@
 
   .howto {
     background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
-    padding: 20px 26px; margin-bottom: 40px; font-size: 14.5px; color: var(--text-dim); line-height: 1.7;
+    padding: 22px 26px; margin-bottom: 40px; font-size: 14.5px; color: var(--text-dim); line-height: 1.75;
   }
   .howto strong { color: var(--text); }
+  .howto ol { margin: 8px 0 0 20px; }
+  .howto li { margin-bottom: 4px; }
 
   .filters {
     display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;
@@ -80,7 +82,8 @@
     background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
     padding: 20px 22px; margin-bottom: 14px; position: relative;
   }
-  .prompt-card h3 { font-size: 15px; font-weight: 700; margin-bottom: 10px; padding-right: 90px; }
+  .prompt-card h3 { font-size: 15px; font-weight: 700; margin-bottom: 10px; padding-right: 100px; }
+  .prompt-card h3 .n { color: var(--accent); margin-right: 6px; }
   .prompt-card pre {
     font-family: var(--mono); font-size: 13.5px; line-height: 1.65; color: #d8d8e6;
     white-space: pre-wrap; word-break: break-word;
@@ -117,7 +120,14 @@
 </header>
 
 <div class="howto">
-  <strong>Como usar:</strong> 1) Escolha o prompt da sua área e clique em <strong>Copiar</strong>. 2) Cole no ChatGPT (chatgpt.com) ou no Claude (claude.ai). 3) Substitua os trechos entre [colchetes] pela sua situação real. 4) Refine a resposta na mesma conversa: "mais curto", "mais formal", "em tabela", "adapte para WhatsApp". 5) Revise sempre antes de usar — a palavra final é sua.
+  <strong>Como usar:</strong>
+  <ol>
+    <li>Escolha o prompt da sua área e clique em <strong>Copiar</strong>.</li>
+    <li>Cole no ChatGPT (chatgpt.com) ou no Claude (claude.ai).</li>
+    <li>Substitua os trechos entre <strong>[colchetes]</strong> pela sua situação real.</li>
+    <li>Refine na mesma conversa: "mais curto", "mais formal", "em tabela", "adapte para WhatsApp".</li>
+    <li>Revise sempre antes de usar — a palavra final é sua.</li>
+  </ol>
 </div>
 
 <nav class="filters" id="filters">
@@ -133,64 +143,64 @@
   <button data-area="fiscal">🧾 Fiscal</button>
 </nav>
 
-<!-- ===================== TI ===================== -->
+<!-- ===================== TI (1-4) ===================== -->
 <section class="area" data-area="ti">
   <div class="area-head"><div class="emoji">💻</div><div><h2>TI</h2><small>4 prompts</small></div></div>
 
   <div class="prompt-card">
-    <h3>1 · Explicar um erro de sistema</h3>
+    <h3><span class="n">1</span>Explicar um erro de sistema</h3>
     <pre>Recebi este erro no sistema: [colar a mensagem de erro completa].
 Explique: (1) o que esse erro significa em linguagem simples,
 (2) as causas mais prováveis, (3) um passo a passo para investigar e corrigir.</pre>
   </div>
   <div class="prompt-card">
-    <h3>2 · Gerar consulta SQL</h3>
+    <h3><span class="n">2</span>Gerar consulta SQL</h3>
     <pre>Tenho estas tabelas: [descrever tabelas e colunas].
 Escreva uma consulta SQL que [descrever o resultado desejado].
 Explique a consulta linha por linha para um iniciante.</pre>
   </div>
   <div class="prompt-card">
-    <h3>3 · Documentar código</h3>
+    <h3><span class="n">3</span>Documentar código</h3>
     <pre>Analise este código: [colar o código].
 Crie uma documentação clara com: o que ele faz, parâmetros de entrada,
 o que retorna, dependências e um exemplo de uso.
 Formato: markdown pronto para a wiki interna.</pre>
   </div>
   <div class="prompt-card">
-    <h3>4 · Revisar um script</h3>
+    <h3><span class="n">4</span>Revisar um script</h3>
     <pre>Revise este script: [colar o script].
 Aponte: possíveis bugs, riscos de segurança, melhorias de desempenho
 e boas práticas que não estão sendo seguidas. Liste por ordem de prioridade.</pre>
   </div>
 </section>
 
-<!-- ===================== RH ===================== -->
+<!-- ===================== RH (5-8) ===================== -->
 <section class="area" data-area="rh">
   <div class="area-head"><div class="emoji">🧑‍🤝‍🧑</div><div><h2>RH</h2><small>4 prompts</small></div></div>
 
   <div class="prompt-card">
-    <h3>5 · Estruturar um feedback difícil</h3>
+    <h3><span class="n">5</span>Estruturar um feedback difícil</h3>
     <pre>Sou gestor e preciso dar um feedback para um colaborador que [descrever a situação,
 sem citar nomes]. Me ajude a estruturar a conversa: como abrir, como apresentar
 o problema com exemplos, como ouvir o lado dele e como combinar próximos passos.
 Tom empático e direto.</pre>
   </div>
   <div class="prompt-card">
-    <h3>6 · Roteiro de entrevista</h3>
+    <h3><span class="n">6</span>Roteiro de entrevista</h3>
     <pre>Crie um roteiro de entrevista para a vaga de [cargo].
 Inclua: 3 perguntas de experiência técnica, 3 comportamentais (método STAR),
 2 sobre trabalho em equipe e 1 pergunta-desafio prática.
 Para cada pergunta, diga o que observar na resposta.</pre>
   </div>
   <div class="prompt-card">
-    <h3>7 · Descrição de vaga atrativa</h3>
+    <h3><span class="n">7</span>Descrição de vaga atrativa</h3>
     <pre>Escreva uma descrição de vaga para [cargo] em [cidade].
 Responsabilidades: [listar]. Requisitos: [listar]. Diferenciais da empresa: [listar].
 Tom: acolhedor e profissional. Estrutura: título chamativo, sobre a empresa,
 o que você fará, o que buscamos, o que oferecemos.</pre>
   </div>
   <div class="prompt-card">
-    <h3>8 · Comunicado interno sensível</h3>
+    <h3><span class="n">8</span>Comunicado interno sensível</h3>
     <pre>Preciso comunicar aos colaboradores que [descrever a mudança ou notícia].
 Escreva um comunicado interno claro, transparente e respeitoso,
 que reduza a ansiedade e antecipe as 3 principais dúvidas que vão surgir.
@@ -198,75 +208,68 @@ Máximo 15 linhas.</pre>
   </div>
 </section>
 
-<!-- ===================== FINANCEIRO ===================== -->
+<!-- ===================== FINANCEIRO (9-12) ===================== -->
 <section class="area" data-area="financeiro">
   <div class="area-head"><div class="emoji">💰</div><div><h2>Financeiro</h2><small>4 prompts</small></div></div>
 
   <div class="prompt-card">
-    <h3>9 · Régua de cobrança em 3 estágios</h3>
+    <h3><span class="n">9</span>Régua de cobrança em 3 estágios</h3>
     <pre>Crie uma régua de cobrança com 3 mensagens para um cliente com fatura vencida:
 (1) lembrete amigável aos 5 dias, (2) cobrança firme aos 15 dias,
 (3) notificação formal aos 30 dias.
 Tom profissional, sem ameaças, máximo 5 linhas cada. Formatos: e-mail e WhatsApp.</pre>
   </div>
   <div class="prompt-card">
-    <h3>10 · Analisar números e apontar desvios</h3>
+    <h3><span class="n">10</span>Analisar números e apontar desvios</h3>
     <pre>Analise estes dados: [colar tabela ou anexar planilha].
 Me diga: (1) os 3 principais destaques, (2) tendências ou anomalias,
 (3) o que merece investigação. Depois resuma em 3 bullets para a diretoria.</pre>
   </div>
   <div class="prompt-card">
-    <h3>11 · Explicar um indicador para leigos</h3>
+    <h3><span class="n">11</span>Explicar um indicador para leigos</h3>
     <pre>Explique o indicador [nome do KPI, ex.: EBITDA, inadimplência, margem de contribuição]
 para alguém que não é da área financeira. Use uma analogia do dia a dia,
 diga por que ele importa e o que significa quando sobe ou desce. Máximo 10 linhas.</pre>
   </div>
   <div class="prompt-card">
-    <h3>12 · Resumo executivo de planilha</h3>
+    <h3><span class="n">12</span>Resumo executivo de planilha</h3>
     <pre>[anexar planilha] Analise esta planilha e crie um resumo executivo com:
 visão geral em 3 frases, principais números, variações relevantes
 em relação ao período anterior e pontos de atenção. Formato: tópicos curtos.</pre>
   </div>
 </section>
 
-<!-- ===================== ADMINISTRATIVO ===================== -->
+<!-- ===================== ADMINISTRATIVO (13-15) ===================== -->
 <section class="area" data-area="administrativo">
-  <div class="area-head"><div class="emoji">🗂️</div><div><h2>Administrativo</h2><small>4 prompts</small></div></div>
+  <div class="area-head"><div class="emoji">🗂️</div><div><h2>Administrativo</h2><small>3 prompts</small></div></div>
 
   <div class="prompt-card">
-    <h3>13 · E-mail difícil para fornecedor</h3>
+    <h3><span class="n">13</span>E-mail difícil para fornecedor</h3>
     <pre>Você é um analista administrativo. Preciso responder um fornecedor que
 [descrever o problema, ex.: atrasou uma entrega].
 Escreva um e-mail profissional, educado e firme, com no máximo 8 linhas,
 pedindo [o que você precisa: nova data, desconto, posicionamento].</pre>
   </div>
   <div class="prompt-card">
-    <h3>14 · Anotações bagunçadas → ata formal</h3>
+    <h3><span class="n">14</span>Anotações bagunçadas → ata formal</h3>
     <pre>Aqui estão minhas anotações soltas da reunião de hoje: [colar anotações].
 Transforme em uma ata profissional com: data e participantes, pauta,
 decisões tomadas, pendências e responsáveis com prazos. Formato de tópicos.</pre>
   </div>
   <div class="prompt-card">
-    <h3>15 · Comunicado interno claro</h3>
-    <pre>Escreva um comunicado interno sobre [assunto, ex.: mudança no horário da portaria].
-Público: todos os colaboradores. Tom: claro e cordial.
-Estrutura: o que muda, a partir de quando, o que cada um precisa fazer,
-a quem recorrer em caso de dúvida. Máximo 10 linhas.</pre>
-  </div>
-  <div class="prompt-card">
-    <h3>16 · Tópicos soltos → relatório estruturado</h3>
+    <h3><span class="n">15</span>Tópicos soltos → relatório estruturado</h3>
     <pre>Transforme estes tópicos em um relatório profissional: [colar tópicos].
 Estrutura: resumo executivo, contexto, atividades realizadas,
 resultados, próximos passos. Tom formal, escrita clara, sem enrolação.</pre>
   </div>
 </section>
 
-<!-- ===================== IMOBILIÁRIA ===================== -->
+<!-- ===================== IMOBILIÁRIA (16-19) ===================== -->
 <section class="area" data-area="imobiliaria">
   <div class="area-head"><div class="emoji">🏠</div><div><h2>Imobiliária</h2><small>4 prompts</small></div></div>
 
   <div class="prompt-card">
-    <h3>17 · Anúncio de imóvel que vende</h3>
+    <h3><span class="n">16</span>Anúncio de imóvel que vende</h3>
     <pre>Você é um corretor experiente. Crie um anúncio atraente para:
 [descrever o imóvel: tipo, quartos, metragem, vagas, diferenciais, bairro, cidade].
 Público-alvo: [ex.: famílias jovens, investidores].
@@ -274,21 +277,21 @@ Tom: [ex.: acolhedor, sofisticado]. Máximo 6 linhas + 1 título chamativo.
 Depois crie 3 variações: portal imobiliário, Instagram e WhatsApp.</pre>
   </div>
   <div class="prompt-card">
-    <h3>18 · Melhorar descrição existente</h3>
+    <h3><span class="n">17</span>Melhorar descrição existente</h3>
     <pre>Melhore esta descrição de imóvel: [colar texto atual].
 Deixe mais atraente e vendedora, destaque os diferenciais,
 corrija o português e mantenha todas as informações verdadeiras.
 Não invente características que não estão no texto original.</pre>
   </div>
   <div class="prompt-card">
-    <h3>19 · Responder cliente interessado</h3>
+    <h3><span class="n">18</span>Responder cliente interessado</h3>
     <pre>Um cliente enviou esta mensagem sobre um imóvel: [colar a mensagem].
 Escreva uma resposta cordial e ágil que: responda as dúvidas,
 gere interesse e proponha uma visita. Formato: mensagem de WhatsApp,
 máximo 6 linhas, sem parecer robô.</pre>
   </div>
   <div class="prompt-card">
-    <h3>20 · Resumir contrato de locação</h3>
+    <h3><span class="n">19</span>Resumir contrato de locação</h3>
     <pre>[anexar contrato SEM dados pessoais] Resuma este contrato de locação
 em linguagem simples. Destaque: valores e reajustes, prazos, multas,
 obrigações do locador e do locatário, e condições de rescisão.
@@ -296,32 +299,25 @@ Formato: tópicos. Ao final, liste cláusulas que merecem atenção especial.</p
   </div>
 </section>
 
-<!-- ===================== MARKETING ===================== -->
+<!-- ===================== MARKETING (20-22) ===================== -->
 <section class="area" data-area="marketing">
-  <div class="area-head"><div class="emoji">📣</div><div><h2>Marketing</h2><small>4 prompts</small></div></div>
+  <div class="area-head"><div class="emoji">📣</div><div><h2>Marketing</h2><small>3 prompts</small></div></div>
 
   <div class="prompt-card">
-    <h3>21 · Calendário de conteúdo</h3>
+    <h3><span class="n">20</span>Calendário de conteúdo</h3>
     <pre>Crie um calendário de conteúdo de 2 semanas para o Instagram de [tipo de negócio]
 em [cidade]. Formato: tabela com dia, tema, formato do post (foto, carrossel, reels)
 e legenda sugerida. Misture: produto/serviço, dicas para o público e bastidores.</pre>
   </div>
   <div class="prompt-card">
-    <h3>22 · Legendas com variações</h3>
+    <h3><span class="n">21</span>Legendas com variações</h3>
     <pre>Crie 5 opções de legenda para um post sobre [assunto do post].
 Cada uma com: gancho forte na primeira linha, texto de até 4 linhas,
 chamada para ação e 5 hashtags. Tons variados: inspirador, direto,
 bem-humorado, informativo e urgente.</pre>
   </div>
   <div class="prompt-card">
-    <h3>23 · Conceito de campanha</h3>
-    <pre>Preciso criar uma campanha para [produto/serviço/lançamento].
-Público-alvo: [descrever]. Objetivo: [ex.: gerar leads, vender, divulgar marca].
-Crie 3 conceitos de campanha diferentes, cada um com: nome, ideia central,
-slogan e exemplos de peças. Faça perguntas antes se faltar informação.</pre>
-  </div>
-  <div class="prompt-card">
-    <h3>24 · Anúncio para tráfego pago</h3>
+    <h3><span class="n">22</span>Anúncio para tráfego pago</h3>
     <pre>Crie 10 títulos e 5 descrições para anúncios no [Google Ads / Meta Ads]
 sobre [produto ou serviço]. Público: [descrever]. Objetivo: [cliques, leads, vendas].
 Respeite os limites: títulos até 30 caracteres, descrições até 90.
@@ -329,33 +325,26 @@ Formato: tabela com título, descrição e ângulo de venda usado.</pre>
   </div>
 </section>
 
-<!-- ===================== COMERCIAL ===================== -->
+<!-- ===================== COMERCIAL (23-25) ===================== -->
 <section class="area" data-area="comercial">
-  <div class="area-head"><div class="emoji">🤝</div><div><h2>Comercial</h2><small>4 prompts</small></div></div>
+  <div class="area-head"><div class="emoji">🤝</div><div><h2>Comercial</h2><small>3 prompts</small></div></div>
 
   <div class="prompt-card">
-    <h3>25 · Contornar objeções</h3>
+    <h3><span class="n">23</span>Contornar objeções</h3>
     <pre>Vendo [produto/serviço]. O cliente disse: "[objeção, ex.: está caro]".
 Crie 10 formas diferentes de contornar essa objeção com empatia,
 sem desvalorizar o produto e sem pressionar demais.
 Depois indique as 2 mais adequadas para um cliente [perfil do cliente].</pre>
   </div>
   <div class="prompt-card">
-    <h3>26 · Follow-up sem ser chato</h3>
+    <h3><span class="n">24</span>Follow-up sem ser chato</h3>
     <pre>Fiz uma proposta para um cliente há [X dias] e ele não respondeu.
 Escreva 3 mensagens de follow-up: uma leve para agora,
 uma com senso de urgência para daqui a uma semana,
 e uma de "última tentativa" elegante. Formato: WhatsApp, máximo 5 linhas cada.</pre>
   </div>
   <div class="prompt-card">
-    <h3>27 · Preparação para reunião de vendas</h3>
-    <pre>Tenho uma reunião com um potencial cliente: [descrever empresa e contexto].
-Me ajude a preparar: 5 perguntas de descoberta para entender a dor dele,
-os 3 argumentos mais fortes do meu produto [descrever] para esse perfil,
-e as objeções prováveis com respostas sugeridas.</pre>
-  </div>
-  <div class="prompt-card">
-    <h3>28 · Proposta comercial persuasiva</h3>
+    <h3><span class="n">25</span>Proposta comercial persuasiva</h3>
     <pre>Transforme estas informações em uma proposta comercial persuasiva: [colar dados:
 o que está sendo oferecido, valores, prazos, condições].
 Estrutura: entendimento da necessidade, solução proposta, investimento,
@@ -363,38 +352,38 @@ diferenciais, próximos passos. Tom: profissional e confiante, sem arrogância.<
   </div>
 </section>
 
-<!-- ===================== CONTABILIDADE ===================== -->
+<!-- ===================== CONTABILIDADE (26-28) ===================== -->
 <section class="area" data-area="contabilidade">
   <div class="area-head"><div class="emoji">📒</div><div><h2>Contabilidade</h2><small>3 prompts</small></div></div>
 
   <div class="prompt-card">
-    <h3>29 · Explicar norma contábil em linguagem simples</h3>
+    <h3><span class="n">26</span>Explicar norma contábil em linguagem simples</h3>
     <pre>Explique a norma [ex.: CPC 06 - Arrendamentos] em linguagem simples,
 para um gestor que não é contador. Inclua: o que ela determina,
 quem é afetado, um exemplo prático do dia a dia e o que muda na prática.
 Ao final, indique onde confirmar a versão atualizada da norma.</pre>
   </div>
   <div class="prompt-card">
-    <h3>30 · Organizar procedimento de fechamento</h3>
+    <h3><span class="n">27</span>Checklist de fechamento contábil</h3>
     <pre>Crie um checklist de fechamento contábil mensal com base nestas etapas
 que fazemos hoje: [listar etapas]. Organize em ordem lógica, com:
 responsável sugerido, prazo relativo (dia útil), documentos necessários
 e pontos de conferência. Formato: tabela.</pre>
   </div>
   <div class="prompt-card">
-    <h3>Bônus · Explicar lançamento para auditoria</h3>
+    <h3><span class="n">28</span>Nota explicativa para auditoria</h3>
     <pre>Preciso documentar a justificativa deste lançamento contábil: [descrever].
 Escreva uma nota explicativa clara e objetiva, adequada para auditoria,
 com: contexto, fundamentação, contas envolvidas e critério utilizado.</pre>
   </div>
 </section>
 
-<!-- ===================== FISCAL ===================== -->
+<!-- ===================== FISCAL (29-30) ===================== -->
 <section class="area" data-area="fiscal">
-  <div class="area-head"><div class="emoji">🧾</div><div><h2>Fiscal</h2><small>3 prompts</small></div></div>
+  <div class="area-head"><div class="emoji">🧾</div><div><h2>Fiscal</h2><small>2 prompts</small></div></div>
 
   <div class="prompt-card">
-    <h3>Bônus · Resumir mudança na legislação</h3>
+    <h3><span class="n">29</span>Resumir mudança na legislação</h3>
     <pre>Resuma as principais mudanças de [lei, decreto ou norma, ex.: reforma tributária]
 que afetam uma empresa do setor [setor de atuação].
 Formato: o que mudou, a partir de quando, quem é impactado, o que fazer.
@@ -402,18 +391,11 @@ Importante: indique os pontos que preciso confirmar na fonte oficial,
 pois legislação muda com frequência.</pre>
   </div>
   <div class="prompt-card">
-    <h3>Bônus · Explicar regra fiscal para outra área</h3>
+    <h3><span class="n">30</span>Explicar regra fiscal para outra área</h3>
     <pre>Explique para a equipe de [área, ex.: Comercial] por que
 [regra fiscal, ex.: não podemos emitir a nota desta forma].
 Linguagem simples, sem juridiquês, com um exemplo prático.
 Máximo 10 linhas. O objetivo é que eles entendam e sigam o procedimento.</pre>
-  </div>
-  <div class="prompt-card">
-    <h3>Bônus · Organizar procedimento fiscal</h3>
-    <pre>Transforme este procedimento fiscal em um passo a passo claro para treinamento
-de novos colaboradores: [descrever ou colar o procedimento].
-Formato: passos numerados, com alertas de erros comuns em cada etapa
-e um checklist final de conferência.</pre>
   </div>
 </section>
 
