@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IA no Trabalho — ChatGPT &amp; Claude na Prática | Grupo Paraná</title>
+<style>
+  :root {
+    --bg: #07070d;
+    --bg-soft: #0e0e18;
+    --surface: rgba(255, 255, 255, 0.04);
+    --surface-2: rgba(255, 255, 255, 0.07);
+    --border: rgba(255, 255, 255, 0.10);
+    --text: #f4f4f8;
+    --text-dim: #9a9ab0;
+    --text-mute: #6b6b82;
+    --accent: #19c37d;        /* ChatGPT green */
+    --accent-2: #d97757;      /* Claude coral  */
+    --accent-3: #6e8bff;      /* blue */
+    --danger: #ff5c72;
+    --radius: 18px;
+    --font: "Inter", "Segoe UI", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+    --mono: "SF Mono", "Cascadia Code", "Fira Code", Consolas, monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ---------- backdrop ---------- */
+  .backdrop {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background:
+      radial-gradient(1000px 600px at 85% -10%, rgba(25, 195, 125, 0.10), transparent 60%),
+      radial-gradient(900px 600px at 10% 110%, rgba(217, 119, 87, 0.10), transparent 60%),
+      radial-gradient(700px 500px at 50% 50%, rgba(110, 139, 255, 0.05), transparent 65%);
+  }
+  .backdrop::after {
+    content: ""; position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+    background-size: 72px 72px;
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+  }
+
+  /* ---------- deck ---------- */
+  .deck { position: relative; z-index: 1; height: 100%; }
+
+  .slide {
+    position: absolute; inset: 0;
+    display: none;
+    align-items: center; justify-content: center;
+    padding: 5vh 7vw 9vh;
+  }
+  .slide.active { display: flex; animation: slideIn .45s cubic-bezier(.22,1,.36,1); }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(18px) scale(.985); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .slide-body { width: 100%; max-width: 1200px; }
+
+  /* ---------- typography ---------- */
+  .kicker {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-size: clamp(11px, 1.1vw, 14px);
+    letter-spacing: .22em; text-transform: uppercase;
+    color: var(--text-dim); font-weight: 600;
+    margin-bottom: 26px;
+  }
+  .kicker::before {
+    content: ""; width: 26px; height: 2px; border-radius: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  }
+
+  h1 {
+    font-size: clamp(40px, 6.2vw, 92px);
+    line-height: 1.04; font-weight: 800; letter-spacing: -0.03em;
+  }
+  h2 {
+    font-size: clamp(30px, 4.4vw, 62px);
+    line-height: 1.08; font-weight: 800; letter-spacing: -0.025em;
+    margin-bottom: 20px;
+  }
+  .lead {
+    font-size: clamp(16px, 1.7vw, 24px);
+    color: var(--text-dim); line-height: 1.55; max-width: 780px;
+    margin-top: 18px;
+  }
+  .grad {
+    background: linear-gradient(92deg, var(--accent) 0%, #7fe0b6 45%, var(--accent-2) 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .grad-blue {
+    background: linear-gradient(92deg, var(--accent-3), #9db4ff);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+
+  /* ---------- generic cards / grids ---------- */
+  .grid { display: grid; gap: 16px; margin-top: 34px; }
+  .grid.c2 { grid-template-columns: repeat(2, 1fr); }
+  .grid.c3 { grid-template-columns: repeat(3, 1fr); }
+  .grid.c4 { grid-template-columns: repeat(4, 1fr); }
+  .grid.c5 { grid-template-columns: repeat(5, 1fr); }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px 26px;
+    backdrop-filter: blur(6px);
+  }
+  .card h3 {
+    font-size: clamp(15px, 1.5vw, 20px); font-weight: 700; margin-bottom: 8px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .card p { font-size: clamp(13px, 1.25vw, 16px); color: var(--text-dim); line-height: 1.55; }
+  .card .icon { font-size: clamp(22px, 2.2vw, 30px); line-height: 1; margin-bottom: 14px; display: block; }
+
+  .pill {
+    display: inline-block; padding: 6px 14px; border-radius: 999px;
+    border: 1px solid var(--border); background: var(--surface);
+    font-size: clamp(12px, 1.15vw, 15px); color: var(--text-dim); font-weight: 500;
+  }
+
+  .tag {
+    display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: .14em;
+    text-transform: uppercase; padding: 4px 10px; border-radius: 6px; margin-bottom: 12px;
+  }
+  .tag.gpt    { color: #7fe0b6; background: rgba(25,195,125,.12); border: 1px solid rgba(25,195,125,.3); }
+  .tag.claude { color: #f0a98f; background: rgba(217,119,87,.12); border: 1px solid rgba(217,119,87,.35); }
+  .tag.demo   { color: #9db4ff; background: rgba(110,139,255,.12); border: 1px solid rgba(110,139,255,.35); }
+  .tag.warn   { color: #ff8a9a; background: rgba(255,92,114,.10); border: 1px solid rgba(255,92,114,.35); }
+
+  /* ---------- prompt blocks ---------- */
+  .prompt {
+    font-family: var(--mono);
+    font-size: clamp(13px, 1.3vw, 17px);
+    line-height: 1.6;
+    background: #101019;
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 12px;
+    padding: 18px 22px;
+    color: #d8d8e6;
+    white-space: pre-wrap;
+  }
+  .prompt.bad { border-left-color: var(--danger); color: var(--text-dim); }
+  .prompt-label {
+    font-size: 12px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase;
+    margin-bottom: 10px; display: flex; align-items: center; gap: 8px;
+  }
+  .prompt-label.good { color: #7fe0b6; }
+  .prompt-label.bad-l { color: #ff8a9a; }
+
+  .chat-step {
+    display: flex; align-items: center; gap: 14px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 14px; padding: 14px 20px;
+    font-size: clamp(14px, 1.5vw, 20px); font-weight: 500;
+  }
+  .chat-step .n {
+    flex-shrink: 0; width: 30px; height: 30px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    color: #06060b;
+  }
+
+  /* ---------- versus layout ---------- */
+  .versus { display: grid; grid-template-columns: 1fr auto 1fr; gap: 22px; align-items: stretch; margin-top: 34px; }
+  .versus .vs {
+    align-self: center; font-weight: 800; font-size: clamp(16px, 1.8vw, 24px);
+    color: var(--text-mute); letter-spacing: .1em;
+  }
+  .tool-card { padding: 30px 30px 26px; }
+  .tool-card.gpt-b    { border-color: rgba(25,195,125,.35);  box-shadow: 0 0 60px -20px rgba(25,195,125,.25); }
+  .tool-card.claude-b { border-color: rgba(217,119,87,.40); box-shadow: 0 0 60px -20px rgba(217,119,87,.28); }
+  .tool-card .tool-name { font-size: clamp(22px, 2.4vw, 34px); font-weight: 800; margin-bottom: 4px; }
+  .tool-card ul { list-style: none; margin-top: 18px; display: flex; flex-direction: column; gap: 10px; }
+  .tool-card li {
+    font-size: clamp(13px, 1.3vw, 17px); color: var(--text-dim); line-height: 1.45;
+    padding-left: 24px; position: relative;
+  }
+  .tool-card li::before { content: "✓"; position: absolute; left: 0; font-weight: 700; }
+  .tool-card.gpt-b    li::before { color: var(--accent); }
+  .tool-card.claude-b li::before { color: var(--accent-2); }
+
+  /* ---------- checklist / list ---------- */
+  .biglist { list-style: none; margin-top: 30px; display: flex; flex-direction: column; gap: 14px; }
+  .biglist li {
+    font-size: clamp(16px, 1.9vw, 26px); font-weight: 600;
+    display: flex; align-items: baseline; gap: 16px; color: var(--text);
+  }
+  .biglist li .b { color: var(--accent); font-weight: 800; }
+  .biglist li small { color: var(--text-dim); font-weight: 400; font-size: .72em; }
+
+  /* ---------- HUD ---------- */
+  .hud {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 50;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 26px; pointer-events: none;
+    font-size: 12.5px; color: var(--text-mute);
+  }
+  .hud .brand { font-weight: 700; letter-spacing: .18em; text-transform: uppercase; }
+  .hud .center { display: flex; align-items: center; gap: 14px; pointer-events: auto; }
+  .hud button {
+    background: var(--surface-2); color: var(--text-dim);
+    border: 1px solid var(--border); border-radius: 8px;
+    padding: 6px 12px; font-size: 12px; cursor: pointer; font-family: var(--font);
+  }
+  .hud button:hover { color: var(--text); border-color: rgba(255,255,255,.25); }
+  .hud .counter { font-variant-numeric: tabular-nums; font-weight: 600; }
+  .hud .time-chip {
+    border: 1px solid var(--border); border-radius: 999px; padding: 4px 12px;
+    background: var(--surface); font-weight: 600;
+  }
+
+  .progress {
+    position: fixed; top: 0; left: 0; height: 3px; z-index: 60;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    transition: width .35s cubic-bezier(.22,1,.36,1);
+    border-radius: 0 3px 3px 0;
+  }
+
+  /* ---------- presenter notes ---------- */
+  .notes-panel {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 70;
+    max-height: 46vh; overflow-y: auto;
+    background: rgba(10, 10, 18, 0.97);
+    border-top: 1px solid var(--border);
+    backdrop-filter: blur(14px);
+    padding: 22px 34px 30px;
+    transform: translateY(105%);
+    transition: transform .3s cubic-bezier(.22,1,.36,1);
+    box-shadow: 0 -20px 60px rgba(0,0,0,.6);
+  }
+  .notes-panel.open { transform: translateY(0); }
+  .notes-panel .np-head {
+    display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;
+  }
+  .notes-panel .np-head h5 {
+    font-size: 12px; letter-spacing: .2em; text-transform: uppercase; color: var(--accent);
+  }
+  .notes-panel .np-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 18px; }
+  .notes-panel .np-item h6 {
+    font-size: 11px; letter-spacing: .16em; text-transform: uppercase;
+    color: var(--text-mute); margin-bottom: 6px;
+  }
+  .notes-panel .np-item p { font-size: 13.5px; line-height: 1.6; color: var(--text-dim); }
+  .notes-panel .np-item p strong { color: var(--text); }
+
+  .slide .notes { display: none; }
+
+  /* ---------- help overlay ---------- */
+  .help-overlay {
+    position: fixed; inset: 0; z-index: 90; display: none;
+    align-items: center; justify-content: center;
+    background: rgba(5,5,10,.85); backdrop-filter: blur(8px);
+  }
+  .help-overlay.open { display: flex; }
+  .help-box {
+    background: var(--bg-soft); border: 1px solid var(--border); border-radius: 20px;
+    padding: 34px 40px; max-width: 460px; width: 90%;
+  }
+  .help-box h4 { margin-bottom: 18px; font-size: 18px; }
+  .help-box .krow { display: flex; justify-content: space-between; padding: 9px 0; border-bottom: 1px solid rgba(255,255,255,.06); font-size: 14px; color: var(--text-dim); }
+  .help-box kbd {
+    font-family: var(--mono); background: var(--surface-2); border: 1px solid var(--border);
+    border-radius: 6px; padding: 2px 10px; font-size: 12.5px; color: var(--text);
+  }
+
+  /* ---------- special slides ---------- */
+  .center-slide { text-align: center; }
+  .center-slide .lead { margin-left: auto; margin-right: auto; }
+
+  .agenda-row {
+    display: flex; gap: 16px; margin-top: 40px;
+  }
+  .agenda-block {
+    flex: 1; border-radius: var(--radius); padding: 26px 24px;
+    border: 1px solid var(--border); background: var(--surface); position: relative; overflow: hidden;
+  }
+  .agenda-block .min { font-size: clamp(30px, 3.6vw, 52px); font-weight: 800; letter-spacing: -.03em; }
+  .agenda-block .lbl { font-size: clamp(13px, 1.3vw, 17px); color: var(--text-dim); margin-top: 6px; }
+  .agenda-block::before {
+    content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  }
+  .agenda-block:nth-child(1)::before { background: var(--accent-3); }
+  .agenda-block:nth-child(2)::before { background: var(--accent); }
+  .agenda-block:nth-child(3)::before { background: var(--accent-2); }
+
+  .formula {
+    display: flex; flex-wrap: wrap; gap: 12px; margin-top: 36px;
+  }
+  .formula .f-chip {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+    padding: 16px 22px; font-weight: 700; font-size: clamp(14px, 1.6vw, 22px);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .formula .f-chip small { display: block; font-weight: 400; font-size: .62em; color: var(--text-mute); margin-top: 2px; }
+  .formula .plus { align-self: center; color: var(--text-mute); font-size: clamp(16px, 1.8vw, 26px); font-weight: 300; }
+
+  .skill-chip {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px 16px; font-size: clamp(12px, 1.2vw, 15.5px); font-weight: 600;
+    display: flex; align-items: center; gap: 10px; color: var(--text);
+  }
+  .skill-chip span.e { font-size: 1.25em; }
+
+  .no-list { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+  .no-chip {
+    border: 1px solid rgba(255,92,114,.4); background: rgba(255,92,114,.08);
+    color: #ffb3bd; border-radius: 999px; padding: 10px 20px;
+    font-size: clamp(13px, 1.4vw, 18px); font-weight: 600;
+  }
+
+  .demo-banner {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: rgba(110,139,255,.12); border: 1px solid rgba(110,139,255,.4);
+    color: #b9c8ff; border-radius: 999px; padding: 8px 18px;
+    font-size: clamp(12px, 1.2vw, 15px); font-weight: 700; letter-spacing: .06em;
+    margin-bottom: 22px; text-transform: uppercase;
+  }
+  .demo-banner .dot {
+    width: 9px; height: 9px; border-radius: 50%; background: #ff5c72;
+    animation: pulse 1.4s infinite;
+  }
+  @keyframes pulse { 0%,100% { opacity: 1; transform: scale(1);} 50% { opacity: .4; transform: scale(.75);} }
+
+  .qr-note {
+    margin-top: 36px; display: inline-flex; align-items: center; gap: 14px;
+    border: 1px dashed rgba(255,255,255,.25); border-radius: 14px; padding: 16px 24px;
+    color: var(--text-dim); font-size: clamp(13px, 1.3vw, 17px);
+  }
+
+  @media (max-width: 900px) {
+    .grid.c3, .grid.c4, .grid.c5 { grid-template-columns: repeat(2, 1fr); }
+    .versus { grid-template-columns: 1fr; }
+    .versus .vs { display: none; }
+    .agenda-row { flex-direction: column; }
+    .slide { padding: 4vh 6vw 12vh; overflow-y: auto; align-items: flex-start; }
+  }
+  @media (max-width: 560px) {
+    .grid.c2, .grid.c3, .grid.c4, .grid.c5 { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="backdrop"></div>
+<div class="progress" id="progress"></div>
+
+<main class="deck" id="deck">
+
+<!-- ============================================================ -->
+<!-- SLIDE 1 — CAPA                                               -->
+<!-- ============================================================ -->
+<section class="slide center-slide" data-time="1 min">
+  <div class="slide-body">
+    <div class="kicker" style="justify-content:center">Grupo Paraná · Treinamento Corporativo</div>
+    <h1>IA no trabalho.<br><span class="grad">Na prática. Hoje.</span></h1>
+    <p class="lead">Como usar <strong>ChatGPT</strong> e <strong>Claude</strong> para ganhar horas por semana — em qualquer área da empresa.</p>
+    <div style="margin-top:44px; display:flex; gap:12px; justify-content:center; flex-wrap:wrap">
+      <span class="pill">TI</span><span class="pill">Imobiliária</span><span class="pill">Administrativo</span>
+      <span class="pill">Financeiro</span><span class="pill">RH</span><span class="pill">Comercial</span>
+      <span class="pill">Marketing</span><span class="pill">Fiscal</span><span class="pill">Contábil</span>
+    </div>
+  </div>
+  <aside class="notes">
+    <div data-k="Objetivo">Quebrar o gelo e alinhar a expectativa: isto NÃO é uma aula técnica, é um treino prático.</div>
+    <div data-k="O que falar">"Boa tarde! Na próxima 1 hora eu não vou dar uma aula sobre Inteligência Artificial. Eu vou mostrar, na tela, como pessoas de qualquer área — do Financeiro à Imobiliária — já estão economizando horas por semana. E o combinado é: amanhã você já usa."</div>
+    <div data-k="Demonstração">Nenhuma. Deixe o ChatGPT e o Claude já abertos em abas do navegador, logados, prontos para as demos.</div>
+    <div data-k="Transição">"Antes de abrir as ferramentas, deixa eu contar rapidinho o que vamos fazer nessa 1 hora."</div>
+  </aside>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 2 — A PROMESSA / AGENDA                                -->
+<!-- ============================================================ -->
+<section class="slide" data-time="2 min">
+  <div class="slide-body">
+    <div class="kicker">Nosso combinado</div>
+    <h2>1 hora. Zero teoria.<br><span class="grad">Você sai usando.</span></h2>
+    <div class="agenda-row">
+      <div class="agenda-block">
+        <div class="min">10 min</div>
+        <div class="lbl">O essencial: o que são as ferramentas e como falar com elas</div>
+      </div>
+      <div class="agenda-block">
+        <div class="min">40 min</div>
+        <div class="lbl">Demonstrações ao vivo com exemplos reais da sua área</div>
+      </div>
+      <div class="agenda-block">
+        <div class="min">10 min</div>
+        <div class="lbl">Suas dúvidas + kit de 30 prompts prontos para levar</div>
+      </div>
+    </div>
+    <p class="lead" style="margin-top:34px">Ao final, todo mundo aqui vai saber pedir, refinar, anexar arquivos e transformar ideias em resultado.</p>
+  </div>
+  <aside class="notes">
+    <div data-k="Objetivo">Mostrar o roteiro e gerar compromisso: a maior parte do tempo será dentro das ferramentas, não nos slides.</div>
+    <div data-k="O que falar">"O formato é simples: 10 minutos de essencial, 40 minutos de demonstração ao vivo — com exemplos da SUA área — e 10 minutos para dúvidas. E ninguém sai de mãos vazias: no final eu entrego um kit com 30 prompts prontos, separados por departamento."</div>
+    <div data-k="Demonstração">Nenhuma. Se quiser, faça uma enquete rápida de mão levantada: "Quem nunca abriu o ChatGPT? Quem usa toda semana? Quem usa todo dia?" — isso calibra o ritmo.</div>
+    <div data-k="Transição">"Mas antes, preciso desfazer alguns mitos que atrapalham muita gente."</div>
+  </aside>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 3 — MITOS                                              -->
+<!-- ============================================================ -->
+<section class="slide" data-time="2 min">
+  <div class="slide-body">
+    <div class="kicker">Vamos desfazer 3 mitos</div>
+    <h2>O que a IA <span style="color:var(--danger)">não</span> é</h2>
+    <div class="grid c3">
+      <div class="card">
+        <span class="icon">✍️</span>
+        <h3>"Serve só para textos"</h3>
+        <p>Ela analisa planilhas, lê PDFs, explica gráficos, cria apresentações, gera fórmulas e muito mais.</p>
+      </div>
+      <div class="card">
+        <span class="icon">🧑‍💻</span>
+        <h3>"É coisa de TI"</h3>
+        <p>Se você sabe escrever uma mensagem no WhatsApp, você sabe usar IA. É conversa, não código.</p>
+      </div>
+      <div class="card">
+        <span class="icon">🤖</span>
+        <h3>"Vai substituir pessoas"</h3>
+        <p>Ela substitui tarefas repetitivas. Quem sabe usar IA se destaca de quem não sabe.</p>
+      </div>
+    </div>
+  </div>
+  <aside class="notes">
+    <div data-k="Objetivo">Remover as três barreiras mentais mais comuns antes de começar as demos.</div>
+    <div data-k="O que falar">"Mito 1: 'IA serve só pra fazer texto'. Hoje vocês vão ver ela lendo contrato, analisando planilha e explicando gráfico. Mito 2: 'é coisa de TI'. Se você manda mensagem no WhatsApp, você já tem toda a habilidade necessária. Mito 3: 'vai roubar meu emprego'. O que muda o jogo não é a IA — é o colega que aprendeu a usar e você não."</div>
+    <div data-k="Demonstração">Nenhuma ainda. Mantenha o ritmo rápido — no máximo 30 segundos por mito.</div>
+    <div data-k="Transição">"Então o que é essa tal de IA, afinal? Eu explico em 30 segundos. Cronometrem."</div>
+  </aside>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 4 — O QUE É (30 SEGUNDOS)                              -->
+<!-- ============================================================ -->
+<section class="slide center-slide" data-time="1 min">
+  <div class="slide-body">
+    <div class="kicker" style="justify-content:center">A única definição que você precisa</div>
+    <h2 style="max-width:1000px;margin-inline:auto">É um assistente que leu <span class="grad-blue">quase tudo</span> e conversa com você em português.</h2>
+    <p class="lead">Ele não "pensa" como gente. Ele é excelente em transformar o que você pede em texto, análise, tabela, resumo ou plano.<br>Só isso. E isso já muda o seu dia.</p>
+  </div>
+  <aside class="notes">
+    <div data-k="Objetivo">Dar o mínimo de contexto conceitual sem entrar em Machine Learning, redes neurais ou história da IA.</div>
+    <div data-k="O que falar">"Definição de 30 segundos: é um assistente que foi treinado lendo uma quantidade gigantesca de textos e aprendeu a conversar. Ele erra? Erra. Por isso a revisão é sua. Mas para 90% das tarefas do dia a dia — escrever, resumir, analisar, organizar — ele é absurdamente bom. Pronto, acabou a teoria da palestra."</div>
+    <div data-k="Demonstração">Nenhuma.</div>
+    <div data-k="Transição">"Existem várias IAs, mas hoje vamos focar nas duas melhores para o trabalho: ChatGPT e Claude."</div>
+  </aside>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 5 — CHATGPT VS CLAUDE                                  -->
+<!-- ============================================================ -->
+<section class="slide" data-time="3 min">
+  <div class="slide-body">
+    <div class="kicker">As duas ferramentas de hoje</div>
+    <h2>ChatGPT <span style="color:var(--text-mute)">&amp;</span> Claude</h2>
+    <div class="versus">
+      <div class="card tool-card gpt-b">
+        <span class="tag gpt">chatgpt.com</span>
+        <div class="tool-name">ChatGPT</div>
+        <p>OpenAI</p>
+        <ul>
+          <li>O mais popular e versátil</li>
+          <li>Gera e analisa imagens</li>
+          <li>Pesquisa na internet</li>
+          <li>Ótimo para brainstorm e criatividade</li>
+          <li>Cria gráficos a partir de planilhas</li>
+        </ul>
+      </div>
+      <div class="vs">VS</div>
+      <div class="card tool-card claude-b">
+        <span class="tag claude">claude.ai</span>
+        <div class="tool-name">Claude</div>
+        <p>Anthropic</p>
+        <ul>
+          <li>Excelente escrita em português</li>
+          <li>Muito bom com documentos longos</li>
+          <li>Respostas detalhadas e cuidadosas</li>
+          <li>Forte em análise de contratos e textos</li>
+          <li>Preferido para revisar e reescrever</li>
+        </ul>
+      </div>
+    </div>
+    <p class="lead" style="margin-top:28px">✅ Os dois têm <strong>versão gratuita</strong> · ✅ Os dois <strong>aceitam anexos</strong> · ✅ Os dois <strong>analisam documentos</strong></p>
+  </div>
+  <aside class="notes">
+    <div data-k="Objetivo">Apresentar as duas ferramentas de forma simples, sem comparação técnica, e derrubar a barreira do custo.</div>
+    <div data-k="O que falar">"São dois 'funcionários digitais' com personalidades diferentes. O ChatGPT é o canivete suíço: faz de tudo, gera imagem, pesquisa na internet. O Claude é o redator sênior: escreve muito bem, é ótimo com documentos longos e contratos. E a melhor notícia: os dois são gratuitos para começar, os dois aceitam anexos, os dois leem documentos. Não precisa pedir orçamento pra ninguém."</div>
+    <div data-k="Demonstração">Mostre rapidamente as duas telas abertas no navegador (chatgpt.com e claude.ai), só para o público ver que a interface é uma caixa de conversa igual ao WhatsApp.</div>
+    <div data-k="Transição">"Tá, mas qual eu uso? Regra de bolso no próximo slide."</div>
+  </aside>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 6 — QUANDO USAR CADA UM                                -->
+<!-- ============================================================ -->
+<section class="slide" data-time="2 min">
+  <div class="slide-body">
+    <div class="kicker">Regra de bolso</div>
+    <h2>Qual usar? <span class="grad">Depende da tarefa.</span></h2>
+    <div class="grid c2">
+      <div class="card tool-card gpt-b">
+        <span class="tag gpt">Use ChatGPT quando…</span>
+        <ul>
+          <li>Precisar de ideias e brainstorm rápido</li>
+          <li>Quiser gerar ou analisar imagens</li>
+          <li>Precisar pesquisar algo atual na internet</li>
+          <li>For explorar dados e criar gráficos</li>
+        </ul>
+      </div>
+      <div class="card tool-card claude-b">
+        <span class="tag claude">Use Claude quando…</span>
+        <ul>
+          <li>O texto final precisa ficar impecável</li>
+          <li>For analisar contratos e documentos longos</li>
+          <li>Quiser respostas mais completas e cuidadosas</li>
+          <li>For revisar, resumir ou reescrever material</li>
+        </ul>
+      </div>
+    </div>
+    <p class="lead" style="margin-top:28px">Na dúvida? <strong>Teste nos dois.</strong> Leva 30 segundos e você compara as respostas.</p>
+  </div>
+  <aside class="notes">
+    <div data-k="Objetivo">Dar um critério prático de escolha que qualquer pessoa memorize em 1 minuto.</div>
+    <div data-k="O que falar">"Regra simples: ideia, imagem e pesquisa → ChatGPT. Texto caprichado, contrato e documento longo → Claude. E o segredo dos usuários avançados: quando a tarefa é importante, joga nos dois e compara. É de graça."</div>
+    <div data-k="Demonstração">Opcional: cole o mesmo pedido simples nos dois ("Escreva um convite de 3 linhas para a confraternização da empresa") e mostre as duas respostas lado a lado.</div>
+    <div data-k="Transição">"Agora sim, a parte mais importante da hora: como PEDIR bem. Porque IA boa com pedido ruim gera resposta ruim."</div>
+  </aside>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 7 — ANATOMIA DO PROMPT                                 -->
+<!-- ============================================================ -->
+<section class="slide" data-time="3 min">
+  <div class="slide-body">
+    <div class="kicker">Engenharia de prompts — sem mistério</div>
+    <h2>A receita de um <span class="grad">bom pedido</span></h2>
+    <div class="formula">
+      <div class="f-chip">🎭 Contexto<small>quem é você / situação</small></div>
+      <div class="plus">+</div>
+      <div class="f-chip">🎯 Objetivo<small>o que você quer</small></div>
+      <div class="plus">+</div>
+      <div class="f-chip">📄 Formato<small>e-mail, tabela, tópicos</small></div>
+      <div class="plus">+</div>
+      <div class="f-chip">🚧 Restrições<small>tamanho, prazo, regras</small></div>
+    </div>
+    <div class="formula" style="margin-top:14px">
+      <div class="f-chip">👥 Público<small>quem vai ler</small></div>
+      <div class="plus">+</div>
+      <div class="f-chip">🗣️ Tom<small>formal, leve, firme</small></div>
+      <div class="plus">+</div>
+      <div class="f-chip">🧩 Exemplo<small>mostre um modelo, se tiver</small></div>
+    </div>
+    <p class="lead" style="margin-top:30px">Não precisa usar os 7 sempre. Mas cada um que você adiciona, <strong>a resposta melhora</strong>.</p>
+  </div>
+  <aside class="notes">
+    <div data-k="Objetivo">Ensinar a estrutura Contexto + Objetivo + Formato + Restrições + Público + Tom + Exemplo de forma memorável.</div>
+    <div data-k="O que falar">"Prompt é só o nome chique para 'pedido'. E um bom pedido tem até 7 ingredientes: contexto (quem sou eu, qual a situação), objetivo (o que eu quero), formato (e-mail? tabela? tópicos?), restrições (máximo 8 linhas, sem jargão), público (quem vai ler), tom (formal? leve? firme?) e, se tiver, um exemplo. Não precisa dos 7 toda vez — mas quanto mais ingredientes, melhor o prato."</div>
+    <div data-k="Demonstração">Nenhuma neste slide — a demo vem no próximo, com o antes/depois.</div>
+    <div data-k="Transição">"Quer ver a diferença que isso faz? Olha esse exemplo real."</div>
+  </aside>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 8 — RUIM VS BOM (DEMO)                                 -->
+<!-- ============================================================ -->
+<section class="slide" data-time="4 min">
+  <div class="slide-body">
+    <div class="demo-banner"><span class="dot"></span> Demonstração ao vivo</div>
+    <h2>O mesmo pedido. <span class="grad">Dois mundos.</span></h2>
+    <div class="grid c2" style="margin-top:28px">
+      <div>
+        <div class="prompt-label bad-l">❌ Prompt ruim</div>
+        <div class="prompt bad">Faça um e-mail.</div>
+      </div>
+      <div>
+        <div class="prompt-label good">✅ Prompt bom</div>
+        <div class="prompt">Você é um analista administrativo.
+Preciso responder um fornecedor que atrasou uma entrega.
+Escreva um e-mail profissional, educado, firme,
+com no máximo oito linhas.</div>
+      </div>
+    </div>
+    <p class="lead" style="margin-top:26px">Mesma ferramenta. Mesmo segundo. A diferença é <strong>como você pede</strong>.</p>
+  </div>
+  <aside class="notes">
+    <div data-k="Objetivo">Provar ao vivo que a qualidade da resposta depende da qualidade do pedido. É o momento "uau" nº 1.</div>
+    <div data-k="O que falar">"Vou rodar os dois na frente de vocês. Primeiro 'faça um e-mail' — olha o resultado: genérico, sem contexto, inútil. Agora o pedido completo: analista administrativo, fornecedor atrasou, e-mail profissional, educado, firme, máximo 8 linhas. Olha a diferença. Isso não é sorte, é receita. Reparem: contexto, objetivo, formato, restrição e tom — os ingredientes do slide anterior."</div>
+    <div data-k="Demonstração">No ChatGPT: (1) envie "Faça um e-mail." e mostre a resposta genérica; (2) em novo chat, envie o prompt bom e leia o e-mail em voz alta destacando tom e tamanho. Se sobrar tempo, rode o mesmo prompt bom no Claude e compare o estilo.</div>
+    <div data-k="Transição">"E aqui vem o segredo que quase ninguém usa: você não precisa acertar de primeira. Isso é uma CONVERSA."</div>
+  </aside>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 9 — É UMA CONVERSA (DEMO)                              -->
+<!-- ============================================================ -->
+<section class="slide" data-time="4 min">
+  <div class="slide-body">
+    <div class="demo-banner"><span class="dot"></span> Demonstração ao vivo</div>
+    <h2>Não recomece. <span class="grad">Refine.</span></h2>
+    <div class="grid c2" style="margin-top:26px; gap:12px">
+      <div class="chat-step"><span class="n">1</span> "Deixe mais profissional."</div>
+      <div class="chat-step"><span class="n">2</span> "Agora mais curto."</div>
+      <div class="chat-step"><span class="n">3</span> "Agora em tópicos."</div>
+      <div class="chat-step"><span class="n">4</span> "Transforme em tabela."</div>
+      <div class="chat-step"><span class="n">5</span> "Transforme em apresentação."</div>
+      <div class="chat-step"><span class="n">6</span> "Adapte para WhatsApp."</div>
+    </div>
+    <p class="lead" style="margin-top:28px">A IA lembra de tudo dentro da conversa. Cada mensagem sua é um <strong>ajuste fino</strong> — não um novo pedido do zero.</p>
+  </div>
+  <aside class="notes">
+    <div data-k="Objetivo">Ensinar o comportamento de refinamento iterativo — a habilidade que separa iniciantes de usuários fluentes.</div>
+    <div data-k="O que falar">"Errou o tom? Não apaga tudo. Fala 'deixe mais profissional'. Ficou longo? 'Mais curto'. Precisa apresentar pro chefe? 'Transforme em tópicos'. Vai mandar pro grupo da equipe? 'Adapte para WhatsApp'. Dentro da mesma conversa ela lembra de tudo. É literalmente como orientar um estagiário muito rápido: você dá o retorno e ele refaz na hora."</div>
+    <div data-k="Demonstração">Continue no chat do e-mail do fornecedor (slide anterior) e aplique os 6 comandos em sequência, um por um, comentando cada transformação. O público precisa VER a mesma informação virando e-mail → tópicos → tabela → mensagem de WhatsApp.</div>
+    <div data-k="Transição">"Vocês já sabem pedir e refinar. Agora vamos aplicar isso na SUA área. Começando pelo Administrativo."</div>
+  </aside>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 10 — DEMO ADMINISTRATIVO                               -->
+<!-- ============================================================ -->
+<section class="slide" data-time="4 min">
+  <div class="slide-body">
+    <div class="demo-banner"><span class="dot"></span> Demo · Administrativo</div>
+    <h2>Administrativo</h2>
+    <div class="grid c4">
+      <div class="card"><span class="icon">📧</span><h3>E-mails</h3><p>Responder, cobrar, comunicar — no tom certo, em segundos.</p></div>
+      <div class="card"><span class="icon">📢</span><h3>Comunicados</h3><p>Avisos internos claros, sem ruído, prontos para enviar.</p></div>
+      <div class="card"><span class="icon">📝</span><h3>Atas</h3><p>Cole as anotações bagunçadas da reunião → ata formal.</p></div>
+      <div class="card"><span class="icon">📊</span><h3>Relatórios</h3><p>Transforme tópicos soltos em relatório estruturado.</p></div>
+    </div>
+    <div style="margin-top:26px">
+      <div class="prompt-label good">✅ Prompt da demo</div>
+      <div class="prompt">Aqui estão minhas anotações soltas da reunião de hoje: [colar anotações].
+Transforme em uma ata profissional com: participantes, decisões,
+pendências e responsáveis. Formato de tópicos.</div>
+    </div>
+  </div>
+  <aside class="notes">
+    <div data-k="Objetivo">Mostrar o caso de uso mais universal da empresa: texto administrativo do dia a dia.</div>
+    <div data-k="O que falar">"Todo mundo aqui escreve e-mail, comunicado ou ata. Vou pegar anotações bagunçadas de uma reunião — daquele jeito que a gente anota mesmo, tudo torto — e pedir uma ata formal. Reparem que eu digo exatamente as seções que quero: participantes, decisões, pendências, responsáveis."</div>
+    <div data-k="Demonstração">Tenha um bloco de anotações fictícias pronto para colar (ex.: "reunião 14h – João, Maria, Carlos – aprovado orçamento evento – falta cotação buffet (Maria, sexta) – mudança horário portaria a confirmar"). Rode o prompt e mostre a ata. Depois refine: "Agora resuma em 5 linhas para enviar por e-mail aos participantes."</div>
+    <div data-k="Transição">"Da papelada interna para o cliente final: Imobiliária."</div>
+  </aside>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 11 — DEMO IMOBILIÁRIA                                  -->
+<!-- ============================================================ -->
+<section class="slide" data-time="4 min">
+  <div class="slide-body">
+    <div class="demo-banner"><span class="dot"></span> Demo · Imobiliária</div>
+    <h2>Imobiliária</h2>
+    <div class="grid c5">
+      <div class="card"><span class="icon">🏠</span><h3>Anúncios</h3><p>Descrição que vende, a partir da ficha do imóvel.</p></div>
+      <div class="card"><span class="icon">✨</span><h3>Descrições</h3><p>Melhorar textos existentes do portal.</p></div>
+      <div class="card"><span class="icon">💬</span><h3>Clientes</h3><p>Respostas rápidas e cordiais para leads.</p></div>
+      <div class="card"><span class="icon">📑</span><h3>Contratos</h3><p>Resumir cláusulas em linguagem simples.</p></div>
+      <div class="card"><span class="icon">📣</span><h3>Campanhas</h3><p>Ideias de divulgação por perfil de comprador.</p></div>
+    </div>
+    <div style="margin-top:26px">
+      <div class="prompt-label good">✅ Prompt da demo</div>
+      <div class="prompt">Você é um corretor experiente. Crie um anúncio atraente para:
+apartamento 3 quartos (1 suíte), 89 m², 2 vagas, sacada com churrasqueira,
+condomínio com piscina, próximo ao Parque Barigui, Curitiba.
+Público: famílias jovens. Tom: acolhedor. Máximo 6 linhas + 1 título chamativo.</div>
+    </div>
+  </div>
+  <aside class="notes">
+    <div data-k="Objetivo">Mostrar geração de texto comercial que vende, e o poder de resumir contratos.</div>
+    <div data-k="O que falar">"Ficha técnica de imóvel todo mundo tem. Texto que VENDE é outra história. Olha o que acontece quando eu dou a ficha, o público-alvo e o tom. E o segundo superpoder da área: pegar um contrato de locação de 12 páginas e pedir 'resuma as obrigações do locatário em linguagem simples' — isso vocês vão ver na parte de anexos."</div>
+    <div data-k="Demonstração">Rode o prompt do anúncio. Depois refine: "Crie 3 variações: uma para Instagram, uma para portal imobiliário e uma para WhatsApp." Mostre como o mesmo imóvel gera 3 peças diferentes em 30 segundos.</div>
+    <div data-k="Transição">"Agora uma área onde tom e precisão importam muito: Financeiro."</div>
+  </aside>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 12 — DEMO FINANCEIRO                                   -->
+<!-- ============================================================ -->
+<section class="slide" data-time="4 min">
+  <div class="slide-body">
+    <div class="demo-banner"><span class="dot"></span> Demo · Financeiro</div>
+    <h2>Financeiro</h2>
+    <div class="grid c4">
+      <div class="card"><span class="icon">💸</span><h3>Cobrança</h3><p>Réguas de cobrança educadas e firmes, por estágio de atraso.</p></div>
+      <div class="card"><span class="icon">📈</span><h3>Análise</h3><p>Cole números e peça leitura: tendências, desvios, alertas.</p></div>
+      <div class="card"><span class="icon">🎯</span><h3>Indicadores</h3><p>Explicar KPIs para quem não é da área.</p></div>
+      <div class="card"><span class="icon">🧮</span><h3>Planilhas</h3><p>Anexe o Excel e peça resumo executivo dos dados.</p></div>
+    </div>
+    <div style="margin-top:26px">
+      <div class="prompt-label good">✅ Prompt da demo</div>
+      <div class="prompt">Crie uma régua de cobrança com 3 mensagens para um cliente
+com fatura vencida: (1) lembrete amigável aos 5 dias,
+(2) cobrança firme aos 15 dias, (3) notificação formal aos 30 dias.
+Tom profissional, sem ameaças, máximo 5 linhas cada.</div>
+    </div>
+  </div>
+  <aside class="notes">
+    <div data-k="Objetivo">Mostrar que a IA resolve o desafio de tom (cobrar sem ofender) e ler números.</div>
+    <div data-k="O que falar">"Cobrar é uma arte: firme demais perde o cliente, suave demais não recebe. Olha a régua de 3 estágios que ela monta. E para análise: você pode colar uma tabelinha de despesas por mês e perguntar 'o que chama atenção aqui?' — ela aponta o outlier na hora."</div>
+    <div data-k="Demonstração">Rode o prompt da régua de cobrança. Em seguida, cole uma mini-tabela de texto (ex.: despesas mensais com um mês fora da curva) e pergunte: "Analise estes números e me diga o que chama atenção. Depois resuma em 3 bullets para a diretoria."</div>
+    <div data-k="Transição">"Do dinheiro para as pessoas: RH."</div>
+  </aside>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 13 — DEMO RH                                           -->
+<!-- ============================================================ -->
+<section class="slide" data-time="3 min">
+  <div class="slide-body">
+    <div class="demo-banner"><span class="dot"></span> Demo · RH</div>
+    <h2>Recursos Humanos</h2>
+    <div class="grid c4">
+      <div class="card"><span class="icon">🗣️</span><h3>Feedback</h3><p>Estruturar conversas difíceis com empatia e clareza.</p></div>
+      <div class="card"><span class="icon">🎤</span><h3>Entrevistas</h3><p>Roteiros de perguntas por competência e por vaga.</p></div>
+      <div class="card"><span class="icon">📋</span><h3>Vagas</h3><p>Descrições atrativas que filtram o candidato certo.</p></div>
+      <div class="card"><span class="icon">📣</span><h3>Comunicados</h3><p>Mensagens internas sensíveis, no tom adequado.</p></div>
+    </div>
+    <div style="margin-top:26px">
+      <div class="prompt-label good">✅ Prompt da demo</div>
+      <div class="prompt">Sou gestor e preciso dar um feedback para um colaborador talentoso,
+mas que tem atrasado entregas. Me ajude a estruturar a conversa:
+como abrir, como apresentar o problema com exemplos,
+como ouvir e como combinar próximos passos. Tom empático e direto.</div>
+    </div>
+  </div>
+  <aside class="notes">
+    <div data-k="Objetivo">Mostrar a IA como parceira de raciocínio ("me ajude a pensar"), não só geradora de texto.</div>
+    <div data-k="O que falar">"Aqui a IA muda de papel: em vez de escrever POR mim, ela pensa COMIGO. Um feedback difícil, uma entrevista, um comunicado delicado — ela estrutura a conversa, sugere abordagens e antecipa reações. É um ensaio antes do jogo."</div>
+    <div data-k="Demonstração">Rode o prompt do feedback. Depois mostre um refinamento poderoso: "Agora simule a conversa: você é o colaborador e responde como ele responderia. Vamos ensaiar." — o público costuma se surpreender com o role-play.</div>
+    <div data-k="Transição">"E quem fala com o mercado todos os dias? Marketing e Comercial."</div>
+  </aside>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 14 — DEMO MARKETING / COMERCIAL                        -->
+<!-- ============================================================ -->
+<section class="slide" data-time="3 min">
+  <div class="slide-body">
+    <div class="demo-banner"><span class="dot"></span> Demo · Marketing &amp; Comercial</div>
+    <h2>Marketing &amp; Comercial</h2>
+    <div class="grid c5">
+      <div class="card"><span class="icon">📱</span><h3>Posts</h3><p>Legendas e textos por rede social.</p></div>
+      <div class="card"><span class="icon">🚀</span><h3>Campanhas</h3><p>Conceitos e ângulos de venda.</p></div>
+      <div class="card"><span class="icon">📅</span><h3>Calendário</h3><p>Planejamento de conteúdo do mês.</p></div>
+      <div class="card"><span class="icon">✏️</span><h3>Legendas</h3><p>Variações com gancho e chamada.</p></div>
+      <div class="card"><span class="icon">🎯</span><h3>Anúncios</h3><p>Títulos e descrições para tráfego pago.</p></div>
+    </div>
+    <div style="margin-top:26px">
+      <div class="prompt-label good">✅ Prompt da demo</div>
+      <div class="prompt">Crie um calendário de conteúdo de 2 semanas para o Instagram
+de uma imobiliária em Curitiba. Formato: tabela com dia, tema,
+formato do post (foto, carrossel, reels) e legenda sugerida.
+Misture: imóveis, dicas para compradores e bastidores da equipe.</div>
+    </div>
+  </div>
+  <aside class="notes">
+    <div data-k="Objetivo">Mostrar volume e velocidade: um mês de trabalho criativo esboçado em um minuto.</div>
+    <div data-k="O que falar">"Marketing sofre com volume: todo dia precisa de post, legenda, ideia. Olha isso: um calendário de 2 semanas, em tabela, com tema, formato e legenda. Isso não substitui o criativo da equipe — é o rascunho que economiza a metade chata do trabalho. E para o Comercial: 'crie 10 respostas para a objeção: está caro'."</div>
+    <div data-k="Demonstração">Rode o prompt do calendário e mostre a tabela sendo gerada. Refinamento rápido: "Agora escreva a legenda completa do post de segunda-feira, com emoji e hashtags." Se der tempo, mostre a técnica "Crie 10 opções" com títulos de anúncio.</div>
+    <div data-k="Transição">"E a turma da TI, que muita gente acha que já sabe tudo? Tem novidade pra vocês também."</div>
+  </aside>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 15 — DEMO TI                                           -->
+<!-- ============================================================ -->
+<section class="slide" data-time="4 min">
+  <div class="slide-body">
+    <div class="demo-banner"><span class="dot"></span> Demo · TI</div>
+    <h2>Tecnologia</h2>
+    <div class="grid c4">
+      <div class="card"><span class="icon">🐞</span><h3>Explicar erros</h3><p>Cole o erro → causa provável + como corrigir.</p></div>
+      <div class="card"><span class="icon">🗄️</span><h3>Gerar SQL</h3><p>Descreva em português → consulta pronta.</p></div>
+      <div class="card"><span class="icon">📘</span><h3>Documentar</h3><p>Código legado vira documentação clara.</p></div>
+      <div class="card"><span class="icon">🔍</span><h3>Revisar scripts</h3><p>Segunda opinião sobre segurança e lógica.</p></div>
+    </div>
+    <div style="margin-top:26px">
+      <div class="prompt-label good">✅ Prompt da demo</div>
+      <div class="prompt">Tenho uma tabela "contratos" (id, cliente_id, valor, data_inicio, status)
+e uma tabela "clientes" (id, nome, cidade).
+Escreva uma consulta SQL que liste os 10 clientes com maior valor
+total de contratos ativos, com nome, cidade e valor somado.
+Explique a consulta linha por linha para um iniciante.</div>
+    </div>
+  </div>
+  <aside class="notes">
+    <div data-k="Objetivo">Mostrar valor para o público técnico e, ao mesmo tempo, desmistificar "código" para o resto da sala.</div>
+    <div data-k="O que falar">"Para a TI: erro esquisito no sistema? Cola a mensagem inteira e pergunta a causa. Precisa de uma consulta? Descreve as tabelas em português e pede o SQL — com explicação linha por linha. E para quem não é de TI: reparem que ela explica o código como se fosse uma receita. Ou seja, ela também traduz o 'tecniquês' para vocês."</div>
+    <div data-k="Demonstração">Rode o prompt do SQL e destaque a explicação linha por linha. Segunda demo rápida: cole um erro real (ex.: "NullReferenceException at line 42…" ou um erro de conexão) e pergunte "Explique este erro como se eu tivesse 10 anos, depois tecnicamente." — conecta com o slide de técnicas avançadas.</div>
+    <div data-k="Transição">"Até agora a gente só digitou. Mas o verdadeiro salto é quando você começa a ANEXAR arquivos."</div>
+  </aside>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 16 — ANEXAR ARQUIVOS (DEMO)                            -->
+<!-- ============================================================ -->
+<section class="slide" data-time="4 min">
+  <div class="slide-body">
+    <div class="demo-banner"><span class="dot"></span> Demonstração ao vivo</div>
+    <h2>O clipe 📎 é o botão <span class="grad">mais subestimado</span></h2>
+    <div class="grid c4" style="margin-top:30px">
+      <div class="skill-chip"><span class="e">📕</span> PDF → resumo</div>
+      <div class="skill-chip"><span class="e">📄</span> Word → revisão</div>
+      <div class="skill-chip"><span class="e">📊</span> Excel → análise</div>
+      <div class="skill-chip"><span class="e">📽️</span> PowerPoint → melhoria</div>
+      <div class="skill-chip"><span class="e">🖼️</span> Imagem → leitura</div>
+      <div class="skill-chip"><span class="e">📑</span> Contrato → cláusulas-chave</div>
+      <div class="skill-chip"><span class="e">📚</span> Manual → perguntas e respostas</div>
+      <div class="skill-chip"><span class="e">📈</span> Relatório → resumo executivo</div>
+    </div>
+    <div style="margin-top:28px">
+      <div class="prompt-label good">✅ Prompts da demo</div>
+      <div class="prompt">[anexar PDF] Resuma este contrato em 10 tópicos. Destaque valores,
+prazos, multas e obrigações de cada parte. Linguagem simples.
+
+[anexar Excel] Analise esta planilha de vendas. Quais os 3 principais
+destaques? Existe alguma tendência ou anomalia? Resuma para a diretoria.</div>
+    </div>
+  </div>
+  <aside class="notes">
+    <div data-k="Objetivo">O momento "uau" nº 2: mostrar que a IA lê os arquivos que a empresa usa todos os dias.</div>
+    <div data-k="O que falar">"Aqui está o recurso que separa quem 'brinca' de quem TRABALHA com IA: o clipe de anexar. PDF, Word, Excel, PowerPoint, imagem — os dois aceitam tudo isso. Contrato de 40 páginas? 10 tópicos em 20 segundos. Planilha de vendas? Resumo executivo pronto. Lembrando: documentos SEM dados sensíveis — já vamos falar de segurança."</div>
+    <div data-k="Demonstração">Prepare 2 arquivos fictícios antes da palestra: (1) um contrato em PDF — anexe e rode o primeiro prompt; (2) uma planilha de vendas em Excel — anexe e rode o segundo. Mostre o upload acontecendo (arrastar e soltar) para o público ver como é simples.</div>
+    <div data-k="Transição">"E não é só documento. Ela também ENXERGA. Olha o que dá pra fazer com imagens."</div>
+  </aside>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 17 — ANÁLISE DE IMAGENS (DEMO)                         -->
+<!-- ============================================================ -->
+<section class="slide" data-time="3 min">
+  <div class="slide-body">
+    <div class="demo-banner"><span class="dot"></span> Demonstração ao vivo</div>
+    <h2>A IA também <span class="grad-blue">enxerga</span></h2>
+    <div class="grid c3" style="margin-top:28px">
+      <div class="chat-step"><span class="n">🖼️</span> "O que existe nesta imagem?"</div>
+      <div class="chat-step"><span class="n">🔤</span> "Extraia todo o texto."</div>
+      <div class="chat-step"><span class="n">📊</span> "Transforme isso em planilha."</div>
+      <div class="chat-step"><span class="n">📈</span> "Explique este gráfico."</div>
+      <div class="chat-step"><span class="n">🖥️</span> "Resuma este dashboard."</div>
+      <div class="chat-step"><span class="n">🧾</span> "Liste os itens desta nota."</div>
+    </div>
+    <p class="lead" style="margin-top:28px">Foto de quadro branco, print de sistema, nota fiscal, gráfico de relatório — <strong>tudo vira texto e dado</strong>.</p>
+  </div>
+  <aside class="notes">
+    <div data-k="Objetivo">Mostrar visão computacional aplicada ao cotidiano: fotos e prints viram informação estruturada.</div>
+    <div data-k="O que falar">"Sabe a foto do quadro branco no fim da reunião, que nunca mais é aberta? Manda pra IA: 'extraia todo o texto e organize em plano de ação'. Print de um gráfico que você não entendeu? 'Explique este gráfico'. Tabela impressa? 'Transforme em planilha'. Ela transcreve, organiza e explica."</div>
+    <div data-k="Demonstração">Prepare 2 imagens: (1) foto de um quadro branco/post-its com anotações — peça "extraia o texto e transforme em checklist de tarefas"; (2) print de um gráfico de barras/dashboard — peça "explique este gráfico em 3 frases para quem não é da área". Arraste as imagens para o chat na frente do público.</div>
+    <div data-k="Transição">"Agora que vocês pegaram o jeito, deixa eu mostrar os comandos dos usuários avançados."</div>
+  </aside>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 18 — PROMPTS AVANÇADOS                                 -->
+<!-- ============================================================ -->
+<section class="slide" data-time="3 min">
+  <div class="slide-body">
+    <div class="kicker">Técnicas de quem usa todo dia</div>
+    <h2>Comandos <span class="grad">mágicos</span></h2>
+    <div class="grid c3" style="margin-top:28px; gap:12px">
+      <div class="skill-chip"><span class="e">🧒</span> "Explique como se eu tivesse 10 anos."</div>
+      <div class="skill-chip"><span class="e">🎓</span> "Agora explique tecnicamente."</div>
+      <div class="skill-chip"><span class="e">❓</span> "Faça perguntas antes de responder."</div>
+      <div class="skill-chip"><span class="e">🧠</span> "Me ajude a pensar sobre isso."</div>
+      <div class="skill-chip"><span class="e">🔟</span> "Crie 10 opções."</div>
+      <div class="skill-chip"><span class="e">🪞</span> "Critique sua própria resposta e melhore."</div>
+      <div class="skill-chip"><span class="e">🎭</span> "Atue como [especialista]…"</div>
+      <div class="skill-chip"><span class="e">🔎</span> "Revise este texto."</div>
+      <div class="skill-chip"><span class="e">⬆️</span> "Melhore este documento."</div>
+      <div class="skill-chip"><span class="e">🧾</span> "Transforme isso em tabela."</div>
+      <div class="skill-chip"><span class="e">✂️</span> "Resuma." / "Detalhe."</div>
+      <div class="skill-chip"><span class="e">▶️</span> "Continue."</div>
+    </div>
+  </div>
+  <aside class="notes">
+    <div data-k="Objetivo">Entregar um vocabulário de comandos reutilizáveis que funcionam em qualquer contexto.</div>
+    <div data-k="O que falar">"Esses comandos funcionam em qualquer conversa, sobre qualquer assunto. Os três mais poderosos: 'Faça perguntas antes de responder' — ela vira consultora e levanta o que você esqueceu de dizer. 'Critique sua própria resposta e melhore' — ela revisa o próprio trabalho e a qualidade sobe. E 'Atue como…' — advogado, contador, cliente irritado — muda completamente a perspectiva da resposta."</div>
+    <div data-k="Demonstração">Escolha 1 para rodar ao vivo: envie "Preciso organizar um evento de fim de ano para a empresa. Faça perguntas antes de responder." e mostre as perguntas inteligentes que ela levanta. É rápido e impressiona.</div>
+    <div data-k="Transição">"E ainda tem uma lista de superpoderes que quase ninguém conhece. Olha isso."</div>
+  </aside>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 19 — SKILLS POUCO CONHECIDAS                           -->
+<!-- ============================================================ -->
+<section class="slide" data-time="3 min">
+  <div class="slide-body">
+    <div class="kicker">O que quase ninguém sabe que ela faz</div>
+    <h2>15 superpoderes <span class="grad">escondidos</span></h2>
+    <div class="grid c5" style="margin-top:28px; gap:12px">
+      <div class="skill-chip"><span class="e">📕</span> Analisar PDFs</div>
+      <div class="skill-chip"><span class="e">📊</span> Ler Excel</div>
+      <div class="skill-chip"><span class="e">📽️</span> Criar apresentações</div>
+      <div class="skill-chip"><span class="e">📅</span> Criar cronogramas</div>
+      <div class="skill-chip"><span class="e">✅</span> Criar checklists</div>
+      <div class="skill-chip"><span class="e">🧮</span> Fórmulas de Excel</div>
+      <div class="skill-chip"><span class="e">📐</span> Fórmulas DAX</div>
+      <div class="skill-chip"><span class="e">🗄️</span> Gerar SQL</div>
+      <div class="skill-chip"><span class="e">🌎</span> Traduzir</div>
+      <div class="skill-chip"><span class="e">🔤</span> Corrigir português</div>
+      <div class="skill-chip"><span class="e">🔀</span> Criar fluxogramas</div>
+      <div class="skill-chip"><span class="e">📑</span> Explicar contratos</div>
+      <div class="skill-chip"><span class="e">🎙️</span> Resumir reuniões</div>
+      <div class="skill-chip"><span class="e">🎯</span> Planos de ação</div>
+      <div class="skill-chip"><span class="e">💡</span> Brainstorm</div>
+    </div>
+    <p class="lead" style="margin-top:26px">Se a tarefa envolve <strong>texto, número, documento ou ideia</strong> — vale perguntar se ela faz. A resposta quase sempre é sim.</p>
+  </div>
+  <aside class="notes">
+    <div data-k="Objetivo">Expandir o repertório mental do público: gerar o "eu não fazia ideia de que fazia tudo isso".</div>
+    <div data-k="O que falar">"Escolham aí os 3 que mais chamaram atenção de vocês. Fórmula de Excel: 'preciso de uma fórmula que some a coluna B quando a coluna A for Curitiba e a data for deste mês' — PROCV, SOMASES, ela monta e explica. Cronograma: 'monte o cronograma da mudança de escritório em tabela, com responsáveis e prazos'. Corrigir português antes de mandar aquele e-mail importante: cola o texto e pede revisão. É um canivete suíço."</div>
+    <div data-k="Demonstração">Demo relâmpago de 60 segundos: peça "Crie uma fórmula de Excel que some os valores da coluna B apenas quando a coluna A for 'Curitiba'. Explique como usar." — fórmulas de Excel são o superpoder que mais gera reação na plateia mista.</div>
+    <div data-k="Transição">"Antes de vocês saírem usando tudo isso, o slide mais importante da apresentação: segurança."</div>
+  </aside>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 20 — SEGURANÇA                                         -->
+<!-- ============================================================ -->
+<section class="slide" data-time="2 min">
+  <div class="slide-body">
+    <span class="tag warn">⚠️ Regras de ouro</span>
+    <h2>Use com <span style="color:var(--danger)">responsabilidade</span></h2>
+    <p class="lead">A conversa com a IA acontece fora da empresa. Então, <strong>nunca envie:</strong></p>
+    <div class="no-list">
+      <span class="no-chip">🔑 Senhas</span>
+      <span class="no-chip">🏦 Dados bancários</span>
+      <span class="no-chip">🔒 Informações confidenciais</span>
+      <span class="no-chip">🪪 Dados sensíveis de clientes (CPF, documentos)</span>
+    </div>
+    <div class="grid c2" style="margin-top:30px">
+      <div class="card">
+        <h3>🧑‍⚖️ Revisão humana, sempre</h3>
+        <p>A IA erra com confiança. Quem assina é você: revise números, nomes, leis e valores antes de enviar qualquer coisa.</p>
+      </div>
+      <div class="card">
+        <h3>🧹 Anonimize quando precisar</h3>
+        <p>Precisa analisar um caso real? Troque nomes por "Cliente A", remova documentos e valores identificáveis.</p>
+      </div>
+    </div>
+  </div>
+  <aside class="notes">
+    <div data-k="Objetivo">Estabelecer as regras de segurança de forma clara e memorável, sem gerar medo paralisante.</div>
+    <div data-k="O que falar">"Regra número 1: o que você digita ali sai da empresa. Então: senha, jamais. Dado bancário, jamais. CPF e documento de cliente, jamais. Precisa analisar um contrato real? Troca o nome por 'Cliente A' e remove os dados pessoais — a análise funciona igual. Regra número 2: a IA erra com muita confiança. Ela pode inventar um número, uma lei, um artigo. Quem assina o e-mail é você. Revisão humana SEMPRE."</div>
+    <div data-k="Demonstração">Nenhuma. Este slide é de fala firme e pausada — desacelere o ritmo de propósito para marcar a importância.</div>
+    <div data-k="Transição">"Combinado? Então vamos fechar com o plano para você começar amanhã."</div>
+  </aside>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 21 — COMECE AMANHÃ + KIT                               -->
+<!-- ============================================================ -->
+<section class="slide" data-time="2 min">
+  <div class="slide-body">
+    <div class="kicker">Seu plano de decolagem</div>
+    <h2>Comece <span class="grad">amanhã cedo</span></h2>
+    <ul class="biglist">
+      <li><span class="b">1.</span> Crie sua conta gratuita <small>— chatgpt.com e claude.ai (5 minutos)</small></li>
+      <li><span class="b">2.</span> Escolha UMA tarefa chata da sua semana <small>— e-mail, resumo, planilha, ata…</small></li>
+      <li><span class="b">3.</span> Use um prompt do kit e refine 3 vezes <small>— "mais curto", "mais formal", "em tabela"</small></li>
+    </ul>
+    <div class="qr-note">
+      🎁 <strong>Kit de 30 prompts prontos</strong> — separados por área: TI, RH, Financeiro, Administrativo, Imobiliária, Marketing, Comercial, Contabilidade e Fiscal. Você recebe o link agora.
+    </div>
+  </div>
+  <aside class="notes">
+    <div data-k="Objetivo">Converter inspiração em ação concreta com um plano de 3 passos e a entrega do kit.</div>
+    <div data-k="O que falar">"Não saiam daqui 'achando legal'. Saiam com missão: amanhã, escolham UMA tarefa chata — aquele e-mail difícil, aquela ata, aquele resumo — e resolvam com a IA usando um prompt do kit. Refinem 3 vezes. Em uma semana isso vira hábito, e hábito vira horas economizadas. O kit tem 30 prompts prontos, separados por área — é copiar, colar e adaptar."</div>
+    <div data-k="Demonstração">Abra rapidamente o arquivo kit-prompts.html na tela e role a página para o público ver o formato (prompts com botão de copiar). Informe como será distribuído (e-mail, intranet ou QR code).</div>
+    <div data-k="Transição">"Agora é com vocês: dúvidas, casos reais, desafios — manda pra cá que a gente resolve ao vivo."</div>
+  </aside>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 22 — ENCERRAMENTO / PERGUNTAS                          -->
+<!-- ============================================================ -->
+<section class="slide center-slide" data-time="6 min">
+  <div class="slide-body">
+    <div class="kicker" style="justify-content:center">Perguntas &amp; desafios ao vivo</div>
+    <h1 style="font-size:clamp(36px,5.4vw,80px)">"Eu consigo começar<br><span class="grad">a usar IA hoje."</span></h1>
+    <p class="lead" style="margin-inline:auto">Traga um problema real do seu dia — vamos resolver juntos, agora, na tela.</p>
+    <div style="margin-top:40px; display:flex; gap:14px; justify-content:center; flex-wrap:wrap">
+      <span class="pill">💬 chatgpt.com</span>
+      <span class="pill">💬 claude.ai</span>
+      <span class="pill">🎁 Kit: 30 prompts prontos</span>
+    </div>
+  </div>
+  <aside class="notes">
+    <div data-k="Objetivo">Fechar com energia alta e transformar o Q&amp;A em demonstração personalizada.</div>
+    <div data-k="O que falar">"Essa frase na tela é o resultado que eu queria: 'eu consigo começar hoje'. Agora o palco é de vocês. Quem tem uma tarefa real desta semana que quer ver resolvida agora? Pode falar que eu digito." Resolva 2 ou 3 casos reais da plateia ao vivo — é a parte mais memorável do treinamento. Encerre agradecendo e reforçando o desafio do dia seguinte.</div>
+    <div data-k="Demonstração">Q&amp;A ao vivo: pegue pedidos da plateia e resolva no ChatGPT ou Claude na hora, aplicando a receita do prompt e os refinamentos ensinados.</div>
+    <div data-k="Transição">Fim. Agradeça, informe novamente onde baixar o kit e se coloque à disposição para dúvidas individuais.</div>
+  </aside>
+</section>
+
+</main>
+
+<!-- HUD -->
+<div class="hud">
+  <div class="brand">Grupo Paraná · IA no Trabalho</div>
+  <div class="center">
+    <button id="btnPrev" title="Slide anterior">←</button>
+    <span class="counter" id="counter">1 / 22</span>
+    <button id="btnNext" title="Próximo slide">→</button>
+    <button id="btnNotes" title="Notas do apresentador (N)">🗒 Notas</button>
+    <button id="btnHelp" title="Atalhos (?)">?</button>
+  </div>
+  <div class="time-chip" id="timeChip">⏱ 1 min</div>
+</div>
+
+<!-- PRESENTER NOTES PANEL -->
+<div class="notes-panel" id="notesPanel">
+  <div class="np-head">
+    <h5>Notas do apresentador — <span id="npSlide"></span></h5>
+    <button class="hud-close" id="npClose" style="background:none;border:none;color:var(--text-mute);cursor:pointer;font-size:18px">✕</button>
+  </div>
+  <div class="np-grid" id="npGrid"></div>
+</div>
+
+<!-- HELP OVERLAY -->
+<div class="help-overlay" id="helpOverlay">
+  <div class="help-box">
+    <h4>Atalhos do teclado</h4>
+    <div class="krow"><span>Próximo slide</span><span><kbd>→</kbd> <kbd>Espaço</kbd> <kbd>PgDn</kbd></span></div>
+    <div class="krow"><span>Slide anterior</span><span><kbd>←</kbd> <kbd>PgUp</kbd></span></div>
+    <div class="krow"><span>Primeiro / último</span><span><kbd>Home</kbd> <kbd>End</kbd></span></div>
+    <div class="krow"><span>Notas do apresentador</span><span><kbd>N</kbd></span></div>
+    <div class="krow"><span>Tela cheia</span><span><kbd>F</kbd></span></div>
+    <div class="krow"><span>Esta ajuda</span><span><kbd>?</kbd> <kbd>H</kbd></span></div>
+    <div class="krow"><span>Fechar painéis</span><span><kbd>Esc</kbd></span></div>
+  </div>
+</div>
+
+<script>
+(function () {
+  const slides = Array.from(document.querySelectorAll(".slide"));
+  const counter = document.getElementById("counter");
+  const progress = document.getElementById("progress");
+  const timeChip = document.getElementById("timeChip");
+  const notesPanel = document.getElementById("notesPanel");
+  const npGrid = document.getElementById("npGrid");
+  const npSlide = document.getElementById("npSlide");
+  const helpOverlay = document.getElementById("helpOverlay");
+
+  let current = 0;
+  const fromHash = parseInt(location.hash.replace("#", ""), 10);
+  if (!isNaN(fromHash) && fromHash >= 1 && fromHash <= slides.length) current = fromHash - 1;
+
+  function renderNotes() {
+    const notes = slides[current].querySelector(".notes");
+    npGrid.innerHTML = "";
+    npSlide.textContent = "Slide " + (current + 1) + " de " + slides.length +
+      " · Tempo estimado: " + (slides[current].dataset.time || "—");
+    if (!notes) return;
+    notes.querySelectorAll("[data-k]").forEach(function (item) {
+      const div = document.createElement("div");
+      div.className = "np-item";
+      div.innerHTML = "<h6>" + item.dataset.k + "</h6><p>" + item.innerHTML + "</p>";
+      npGrid.appendChild(div);
+    });
+  }
+
+  function show(i) {
+    current = Math.max(0, Math.min(slides.length - 1, i));
+    slides.forEach(function (s, idx) { s.classList.toggle("active", idx === current); });
+    counter.textContent = (current + 1) + " / " + slides.length;
+    progress.style.width = ((current + 1) / slides.length * 100) + "%";
+    timeChip.textContent = "⏱ " + (slides[current].dataset.time || "—");
+    history.replaceState(null, "", "#" + (current + 1));
+    renderNotes();
+  }
+
+  function next() { show(current + 1); }
+  function prev() { show(current - 1); }
+  function toggleNotes() { notesPanel.classList.toggle("open"); }
+  function toggleHelp() { helpOverlay.classList.toggle("open"); }
+
+  document.addEventListener("keydown", function (e) {
+    if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
+    switch (e.key) {
+      case "ArrowRight": case " ": case "PageDown": e.preventDefault(); next(); break;
+      case "ArrowLeft": case "PageUp": e.preventDefault(); prev(); break;
+      case "Home": e.preventDefault(); show(0); break;
+      case "End": e.preventDefault(); show(slides.length - 1); break;
+      case "n": case "N": toggleNotes(); break;
+      case "?": case "h": case "H": toggleHelp(); break;
+      case "f": case "F":
+        if (document.fullscreenElement) document.exitFullscreen();
+        else document.documentElement.requestFullscreen();
+        break;
+      case "Escape":
+        notesPanel.classList.remove("open");
+        helpOverlay.classList.remove("open");
+        break;
+    }
+  });
+
+  document.getElementById("btnNext").addEventListener("click", next);
+  document.getElementById("btnPrev").addEventListener("click", prev);
+  document.getElementById("btnNotes").addEventListener("click", toggleNotes);
+  document.getElementById("btnHelp").addEventListener("click", toggleHelp);
+  document.getElementById("npClose").addEventListener("click", toggleNotes);
+  helpOverlay.addEventListener("click", function (e) { if (e.target === helpOverlay) toggleHelp(); });
+
+  // touch swipe
+  let touchX = null;
+  document.addEventListener("touchstart", function (e) { touchX = e.touches[0].clientX; }, { passive: true });
+  document.addEventListener("touchend", function (e) {
+    if (touchX === null) return;
+    const dx = e.changedTouches[0].clientX - touchX;
+    if (Math.abs(dx) > 60) (dx < 0 ? next : prev)();
+    touchX = null;
+  }, { passive: true });
+
+  show(current);
+})();
+</script>
+
+</body>
+</html>
