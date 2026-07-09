@@ -282,32 +282,25 @@
   .center-slide { text-align: center; }
   .center-slide .lead { margin-left: auto; margin-right: auto; }
 
-  .agenda-row {
-    display: flex; gap: 16px; margin-top: 40px;
+  .check-row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+  .check-pill {
+    display: inline-flex; align-items: center; gap: 8px;
+    border: 1px solid rgba(25,195,125,.35); background: rgba(25,195,125,.08);
+    border-radius: 999px; padding: 10px 20px;
+    font-size: clamp(13px, 1.3vw, 17px); font-weight: 600; color: var(--text);
   }
-  .agenda-block {
-    flex: 1; border-radius: var(--radius); padding: 26px 24px;
-    border: 1px solid var(--border); background: var(--surface); position: relative; overflow: hidden;
-  }
-  .agenda-block .min { font-size: clamp(30px, 3.6vw, 52px); font-weight: 800; letter-spacing: -.03em; }
-  .agenda-block .lbl { font-size: clamp(13px, 1.3vw, 17px); color: var(--text-dim); margin-top: 6px; }
-  .agenda-block::before {
-    content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px;
-  }
-  .agenda-block:nth-child(1)::before { background: var(--accent-3); }
-  .agenda-block:nth-child(2)::before { background: var(--accent); }
-  .agenda-block:nth-child(3)::before { background: var(--accent-2); }
 
-  .formula {
-    display: flex; flex-wrap: wrap; gap: 12px; margin-top: 36px;
+  .recipe .card { position: relative; padding: 22px 22px 20px; }
+  .recipe .num {
+    position: absolute; top: 16px; right: 18px;
+    font-size: 12px; font-weight: 800; color: var(--text-mute);
+    font-variant-numeric: tabular-nums;
   }
-  .formula .f-chip {
-    background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
-    padding: 16px 22px; font-weight: 700; font-size: clamp(14px, 1.6vw, 22px);
-    display: flex; align-items: center; gap: 10px;
+  .recipe .card.result {
+    border-color: rgba(25,195,125,.45);
+    background: rgba(25,195,125,.07);
   }
-  .formula .f-chip small { display: block; font-weight: 400; font-size: .62em; color: var(--text-mute); margin-top: 2px; }
-  .formula .plus { align-self: center; color: var(--text-mute); font-size: clamp(16px, 1.8vw, 26px); font-weight: 300; }
+  .recipe .card.result h3 { color: #7fe0b6; }
 
   .skill-chip {
     background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
@@ -346,7 +339,6 @@
     .grid.c3, .grid.c4, .grid.c5 { grid-template-columns: repeat(2, 1fr); }
     .versus { grid-template-columns: 1fr; }
     .versus .vs { display: none; }
-    .agenda-row { flex-direction: column; }
     .slide { padding: 4vh 6vw 12vh; overflow-y: auto; align-items: flex-start; }
   }
   @media (max-width: 560px) {
@@ -364,7 +356,7 @@
 <!-- ============================================================ -->
 <!-- SLIDE 1 — CAPA                                               -->
 <!-- ============================================================ -->
-<section class="slide center-slide" data-time="1 min">
+<section class="slide center-slide" data-time="2 min">
   <div class="slide-body">
     <div class="kicker" style="justify-content:center">Grupo Paraná · Treinamento Corporativo</div>
     <h1>IA no trabalho.<br><span class="grad">Na prática. Hoje.</span></h1>
@@ -377,45 +369,14 @@
   </div>
   <aside class="notes">
     <div data-k="Objetivo">Quebrar o gelo e alinhar a expectativa: isto NÃO é uma aula técnica, é um treino prático.</div>
-    <div data-k="O que falar">"Boa tarde! Na próxima 1 hora eu não vou dar uma aula sobre Inteligência Artificial. Eu vou mostrar, na tela, como pessoas de qualquer área — do Financeiro à Imobiliária — já estão economizando horas por semana. E o combinado é: amanhã você já usa."</div>
-    <div data-k="Demonstração">Nenhuma. Deixe o ChatGPT e o Claude já abertos em abas do navegador, logados, prontos para as demos.</div>
-    <div data-k="Transição">"Antes de abrir as ferramentas, deixa eu contar rapidinho o que vamos fazer nessa 1 hora."</div>
+    <div data-k="O que falar">"Boa tarde! Na próxima 1 hora eu não vou dar uma aula sobre Inteligência Artificial. Eu vou mostrar, na tela, como pessoas de qualquer área — do Financeiro à Imobiliária — já estão economizando horas por semana. O formato é simples: pouco slide e muita demonstração ao vivo, com exemplos da SUA área. E no final, todo mundo leva um kit com 30 prompts prontos."</div>
+    <div data-k="Demonstração">Nenhuma. Deixe o ChatGPT e o Claude já abertos em abas do navegador, logados, prontos para as demos. Se quiser, faça uma enquete rápida de mão levantada: "Quem nunca abriu o ChatGPT? Quem usa todo dia?" — isso calibra o ritmo.</div>
+    <div data-k="Transição">"Antes de abrir as ferramentas, preciso desfazer alguns mitos que atrapalham muita gente."</div>
   </aside>
 </section>
 
 <!-- ============================================================ -->
-<!-- SLIDE 2 — A PROMESSA / AGENDA                                -->
-<!-- ============================================================ -->
-<section class="slide" data-time="2 min">
-  <div class="slide-body">
-    <div class="kicker">Nosso combinado</div>
-    <h2>1 hora. Zero teoria.<br><span class="grad">Você sai usando.</span></h2>
-    <div class="agenda-row">
-      <div class="agenda-block">
-        <div class="min">10 min</div>
-        <div class="lbl">O essencial: o que são as ferramentas e como falar com elas</div>
-      </div>
-      <div class="agenda-block">
-        <div class="min">40 min</div>
-        <div class="lbl">Demonstrações ao vivo com exemplos reais da sua área</div>
-      </div>
-      <div class="agenda-block">
-        <div class="min">10 min</div>
-        <div class="lbl">Suas dúvidas + kit de 30 prompts prontos para levar</div>
-      </div>
-    </div>
-    <p class="lead" style="margin-top:34px">Ao final, todo mundo aqui vai saber pedir, refinar, anexar arquivos e transformar ideias em resultado.</p>
-  </div>
-  <aside class="notes">
-    <div data-k="Objetivo">Mostrar o roteiro e gerar compromisso: a maior parte do tempo será dentro das ferramentas, não nos slides.</div>
-    <div data-k="O que falar">"O formato é simples: 10 minutos de essencial, 40 minutos de demonstração ao vivo — com exemplos da SUA área — e 10 minutos para dúvidas. E ninguém sai de mãos vazias: no final eu entrego um kit com 30 prompts prontos, separados por departamento."</div>
-    <div data-k="Demonstração">Nenhuma. Se quiser, faça uma enquete rápida de mão levantada: "Quem nunca abriu o ChatGPT? Quem usa toda semana? Quem usa todo dia?" — isso calibra o ritmo.</div>
-    <div data-k="Transição">"Mas antes, preciso desfazer alguns mitos que atrapalham muita gente."</div>
-  </aside>
-</section>
-
-<!-- ============================================================ -->
-<!-- SLIDE 3 — MITOS                                              -->
+<!-- SLIDE 2 — MITOS                                              -->
 <!-- ============================================================ -->
 <section class="slide" data-time="2 min">
   <div class="slide-body">
@@ -448,24 +409,24 @@
 </section>
 
 <!-- ============================================================ -->
-<!-- SLIDE 4 — O QUE É (30 SEGUNDOS)                              -->
+<!-- SLIDE 3 — O QUE É (30 SEGUNDOS)                              -->
 <!-- ============================================================ -->
 <section class="slide center-slide" data-time="1 min">
   <div class="slide-body">
-    <div class="kicker" style="justify-content:center">A única definição que você precisa</div>
-    <h2 style="max-width:1000px;margin-inline:auto">É um assistente que leu <span class="grad-blue">quase tudo</span> e conversa com você em português.</h2>
-    <p class="lead">Ele não "pensa" como gente. Ele é excelente em transformar o que você pede em texto, análise, tabela, resumo ou plano.<br>Só isso. E isso já muda o seu dia.</p>
+    <div class="kicker" style="justify-content:center">O que é, em 30 segundos</div>
+    <h2 style="max-width:1000px;margin-inline:auto">Um assistente digital que <span class="grad-blue">escreve, resume e analisa</span> o que você pedir.</h2>
+    <p class="lead">Você pede em português. Ele entrega em segundos: e-mail, resumo, tabela, análise, plano.<br>Ele erra às vezes — por isso a palavra final é sempre sua.</p>
   </div>
   <aside class="notes">
     <div data-k="Objetivo">Dar o mínimo de contexto conceitual sem entrar em Machine Learning, redes neurais ou história da IA.</div>
-    <div data-k="O que falar">"Definição de 30 segundos: é um assistente que foi treinado lendo uma quantidade gigantesca de textos e aprendeu a conversar. Ele erra? Erra. Por isso a revisão é sua. Mas para 90% das tarefas do dia a dia — escrever, resumir, analisar, organizar — ele é absurdamente bom. Pronto, acabou a teoria da palestra."</div>
+    <div data-k="O que falar">"Definição de 30 segundos: pensa num assistente que estudou milhões de livros, sites e documentos, e agora trabalha para você. Você pede em português — um e-mail, um resumo, uma análise — e ele entrega em segundos. Ele erra? Erra. Por isso a revisão final é sempre sua. Mas para 90% das tarefas do dia a dia ele é absurdamente bom. Pronto, acabou a teoria da palestra."</div>
     <div data-k="Demonstração">Nenhuma.</div>
     <div data-k="Transição">"Existem várias IAs, mas hoje vamos focar nas duas melhores para o trabalho: ChatGPT e Claude."</div>
   </aside>
 </section>
 
 <!-- ============================================================ -->
-<!-- SLIDE 5 — CHATGPT VS CLAUDE                                  -->
+<!-- SLIDE 4 — CHATGPT VS CLAUDE                                  -->
 <!-- ============================================================ -->
 <section class="slide" data-time="3 min">
   <div class="slide-body">
@@ -479,9 +440,11 @@
         <ul>
           <li>O mais popular e versátil</li>
           <li>Gera e analisa imagens</li>
-          <li>Pesquisa na internet</li>
+          <li>Pesquisa na internet em tempo real</li>
           <li>Ótimo para brainstorm e criatividade</li>
           <li>Cria gráficos a partir de planilhas</li>
+          <li>Excelente para criar e melhorar prompts</li>
+          <li>Conversa por voz no celular</li>
         </ul>
       </div>
       <div class="vs">VS</div>
@@ -490,26 +453,31 @@
         <div class="tool-name">Claude</div>
         <p>Anthropic</p>
         <ul>
-          <li>Excelente escrita em português</li>
-          <li>Muito bom com documentos longos</li>
-          <li>Respostas detalhadas e cuidadosas</li>
-          <li>Forte em análise de contratos e textos</li>
-          <li>Preferido para revisar e reescrever</li>
+          <li>Escrita impecável em português</li>
+          <li>O melhor com documentos longos e contratos</li>
+          <li>Executa prompts elaborados com precisão</li>
+          <li>Cria documentos, relatórios e páginas interativas</li>
+          <li>Conecta com suas ferramentas (Drive, agenda, e-mail)</li>
+          <li>Queridinho dos desenvolvedores — e vai muito além de código</li>
         </ul>
       </div>
     </div>
-    <p class="lead" style="margin-top:28px">✅ Os dois têm <strong>versão gratuita</strong> · ✅ Os dois <strong>aceitam anexos</strong> · ✅ Os dois <strong>analisam documentos</strong></p>
+    <div class="check-row">
+      <span class="check-pill">✅ Versão gratuita nos dois</span>
+      <span class="check-pill">✅ Anexos nos dois</span>
+      <span class="check-pill">✅ Os dois analisam documentos</span>
+    </div>
   </div>
   <aside class="notes">
     <div data-k="Objetivo">Apresentar as duas ferramentas de forma simples, sem comparação técnica, e derrubar a barreira do custo.</div>
-    <div data-k="O que falar">"São dois 'funcionários digitais' com personalidades diferentes. O ChatGPT é o canivete suíço: faz de tudo, gera imagem, pesquisa na internet. O Claude é o redator sênior: escreve muito bem, é ótimo com documentos longos e contratos. E a melhor notícia: os dois são gratuitos para começar, os dois aceitam anexos, os dois leem documentos. Não precisa pedir orçamento pra ninguém."</div>
-    <div data-k="Demonstração">Mostre rapidamente as duas telas abertas no navegador (chatgpt.com e claude.ai), só para o público ver que a interface é uma caixa de conversa igual ao WhatsApp.</div>
+    <div data-k="O que falar">"São dois 'funcionários digitais' com personalidades diferentes. O ChatGPT é o canivete suíço: faz de tudo, gera imagem, pesquisa na internet, conversa por voz — e é ótimo para te ajudar a montar um bom pedido. O Claude é o executor caprichoso: escreve muito bem, engole documentos longos, cria relatórios e páginas prontas, e ainda conecta com as suas ferramentas, tipo Google Drive e agenda. Ele ficou famoso entre desenvolvedores, mas faz muita coisa para quem não é de TI. E a melhor notícia: os dois são gratuitos para começar, os dois aceitam anexos, os dois leem documentos."</div>
+    <div data-k="Demonstração">Mostre rapidamente as duas telas abertas no navegador (chatgpt.com e claude.ai), só para o público ver que a interface é uma caixa de conversa igual ao WhatsApp. No Claude, mostre em 15 segundos o menu de conectores/integrações para ilustrar o "conecta com suas ferramentas".</div>
     <div data-k="Transição">"Tá, mas qual eu uso? Regra de bolso no próximo slide."</div>
   </aside>
 </section>
 
 <!-- ============================================================ -->
-<!-- SLIDE 6 — QUANDO USAR CADA UM                                -->
+<!-- SLIDE 5 — QUANDO USAR CADA UM                                -->
 <!-- ============================================================ -->
 <section class="slide" data-time="2 min">
   <div class="slide-body">
@@ -523,6 +491,7 @@
           <li>Quiser gerar ou analisar imagens</li>
           <li>Precisar pesquisar algo atual na internet</li>
           <li>For explorar dados e criar gráficos</li>
+          <li>Quiser ajuda para montar o prompt perfeito</li>
         </ul>
       </div>
       <div class="card tool-card claude-b">
@@ -530,43 +499,38 @@
         <ul>
           <li>O texto final precisa ficar impecável</li>
           <li>For analisar contratos e documentos longos</li>
-          <li>Quiser respostas mais completas e cuidadosas</li>
-          <li>For revisar, resumir ou reescrever material</li>
+          <li>For executar um prompt elaborado e completo</li>
+          <li>Quiser gerar documentos e relatórios prontos</li>
+          <li>Quiser conectar a IA às suas ferramentas de trabalho</li>
         </ul>
       </div>
     </div>
-    <p class="lead" style="margin-top:28px">Na dúvida? <strong>Teste nos dois.</strong> Leva 30 segundos e você compara as respostas.</p>
+    <p class="lead" style="margin-top:28px">💡 Combinação vencedora: peça ao <strong>ChatGPT</strong> para montar o prompt ideal — e rode no <strong>Claude</strong> para executar com capricho. Na dúvida, teste nos dois.</p>
   </div>
   <aside class="notes">
-    <div data-k="Objetivo">Dar um critério prático de escolha que qualquer pessoa memorize em 1 minuto.</div>
-    <div data-k="O que falar">"Regra simples: ideia, imagem e pesquisa → ChatGPT. Texto caprichado, contrato e documento longo → Claude. E o segredo dos usuários avançados: quando a tarefa é importante, joga nos dois e compara. É de graça."</div>
-    <div data-k="Demonstração">Opcional: cole o mesmo pedido simples nos dois ("Escreva um convite de 3 linhas para a confraternização da empresa") e mostre as duas respostas lado a lado.</div>
+    <div data-k="Objetivo">Dar um critério prático de escolha que qualquer pessoa memorize em 1 minuto, incluindo o combo ChatGPT cria o prompt + Claude executa.</div>
+    <div data-k="O que falar">"Regra simples: ideia, imagem e pesquisa → ChatGPT. Texto caprichado, contrato, documento longo e relatório pronto → Claude. E o truque dos usuários avançados: peça ao ChatGPT 'monte um prompt completo para eu pedir X' — e cole esse prompt no Claude para executar. Um cria a receita, o outro cozinha. Quando a tarefa é importante, joga nos dois e compara. É de graça."</div>
+    <div data-k="Demonstração">Rápida e poderosa: no ChatGPT, peça "Monte um prompt completo para eu pedir um relatório mensal de resultados para a diretoria". Copie o prompt gerado e cole no Claude. Mostre o resultado — o público vê o combo funcionando na prática.</div>
     <div data-k="Transição">"Agora sim, a parte mais importante da hora: como PEDIR bem. Porque IA boa com pedido ruim gera resposta ruim."</div>
   </aside>
 </section>
 
 <!-- ============================================================ -->
-<!-- SLIDE 7 — ANATOMIA DO PROMPT                                 -->
+<!-- SLIDE 6 — ANATOMIA DO PROMPT                                 -->
 <!-- ============================================================ -->
 <section class="slide" data-time="3 min">
   <div class="slide-body">
     <div class="kicker">Engenharia de prompts — sem mistério</div>
     <h2>A receita de um <span class="grad">bom pedido</span></h2>
-    <div class="formula">
-      <div class="f-chip">🎭 Contexto<small>quem é você / situação</small></div>
-      <div class="plus">+</div>
-      <div class="f-chip">🎯 Objetivo<small>o que você quer</small></div>
-      <div class="plus">+</div>
-      <div class="f-chip">📄 Formato<small>e-mail, tabela, tópicos</small></div>
-      <div class="plus">+</div>
-      <div class="f-chip">🚧 Restrições<small>tamanho, prazo, regras</small></div>
-    </div>
-    <div class="formula" style="margin-top:14px">
-      <div class="f-chip">👥 Público<small>quem vai ler</small></div>
-      <div class="plus">+</div>
-      <div class="f-chip">🗣️ Tom<small>formal, leve, firme</small></div>
-      <div class="plus">+</div>
-      <div class="f-chip">🧩 Exemplo<small>mostre um modelo, se tiver</small></div>
+    <div class="grid c4 recipe">
+      <div class="card"><span class="num">1</span><h3>🎭 Contexto</h3><p>Quem é você e qual é a situação.</p></div>
+      <div class="card"><span class="num">2</span><h3>🎯 Objetivo</h3><p>O que exatamente você quer.</p></div>
+      <div class="card"><span class="num">3</span><h3>📄 Formato</h3><p>E-mail, tabela, tópicos, relatório.</p></div>
+      <div class="card"><span class="num">4</span><h3>🚧 Restrições</h3><p>Tamanho máximo, regras, prazos.</p></div>
+      <div class="card"><span class="num">5</span><h3>👥 Público</h3><p>Quem vai ler a resposta.</p></div>
+      <div class="card"><span class="num">6</span><h3>🗣️ Tom</h3><p>Formal, leve, firme, acolhedor.</p></div>
+      <div class="card"><span class="num">7</span><h3>🧩 Exemplo</h3><p>Mostre um modelo, se tiver.</p></div>
+      <div class="card result"><h3>✨ Resultado</h3><p>Resposta certa, quase de primeira.</p></div>
     </div>
     <p class="lead" style="margin-top:30px">Não precisa usar os 7 sempre. Mas cada um que você adiciona, <strong>a resposta melhora</strong>.</p>
   </div>
@@ -579,7 +543,7 @@
 </section>
 
 <!-- ============================================================ -->
-<!-- SLIDE 8 — RUIM VS BOM (DEMO)                                 -->
+<!-- SLIDE 7 — RUIM VS BOM (DEMO)                                 -->
 <!-- ============================================================ -->
 <section class="slide" data-time="4 min">
   <div class="slide-body">
@@ -609,7 +573,7 @@ com no máximo oito linhas.</div>
 </section>
 
 <!-- ============================================================ -->
-<!-- SLIDE 9 — É UMA CONVERSA (DEMO)                              -->
+<!-- SLIDE 8 — É UMA CONVERSA (DEMO)                              -->
 <!-- ============================================================ -->
 <section class="slide" data-time="4 min">
   <div class="slide-body">
@@ -634,7 +598,7 @@ com no máximo oito linhas.</div>
 </section>
 
 <!-- ============================================================ -->
-<!-- SLIDE 10 — DEMO ADMINISTRATIVO                               -->
+<!-- SLIDE 9 — DEMO ADMINISTRATIVO                               -->
 <!-- ============================================================ -->
 <section class="slide" data-time="4 min">
   <div class="slide-body">
@@ -662,7 +626,7 @@ pendências e responsáveis. Formato de tópicos.</div>
 </section>
 
 <!-- ============================================================ -->
-<!-- SLIDE 11 — DEMO IMOBILIÁRIA                                  -->
+<!-- SLIDE 10 — DEMO IMOBILIÁRIA                                  -->
 <!-- ============================================================ -->
 <section class="slide" data-time="4 min">
   <div class="slide-body">
@@ -692,7 +656,7 @@ Público: famílias jovens. Tom: acolhedor. Máximo 6 linhas + 1 título chamati
 </section>
 
 <!-- ============================================================ -->
-<!-- SLIDE 12 — DEMO FINANCEIRO                                   -->
+<!-- SLIDE 11 — DEMO FINANCEIRO                                   -->
 <!-- ============================================================ -->
 <section class="slide" data-time="4 min">
   <div class="slide-body">
@@ -721,7 +685,7 @@ Tom profissional, sem ameaças, máximo 5 linhas cada.</div>
 </section>
 
 <!-- ============================================================ -->
-<!-- SLIDE 13 — DEMO RH                                           -->
+<!-- SLIDE 12 — DEMO RH                                           -->
 <!-- ============================================================ -->
 <section class="slide" data-time="3 min">
   <div class="slide-body">
@@ -750,7 +714,7 @@ como ouvir e como combinar próximos passos. Tom empático e direto.</div>
 </section>
 
 <!-- ============================================================ -->
-<!-- SLIDE 14 — DEMO MARKETING / COMERCIAL                        -->
+<!-- SLIDE 13 — DEMO MARKETING / COMERCIAL                        -->
 <!-- ============================================================ -->
 <section class="slide" data-time="3 min">
   <div class="slide-body">
@@ -780,7 +744,7 @@ Misture: imóveis, dicas para compradores e bastidores da equipe.</div>
 </section>
 
 <!-- ============================================================ -->
-<!-- SLIDE 15 — DEMO TI                                           -->
+<!-- SLIDE 14 — DEMO TI                                           -->
 <!-- ============================================================ -->
 <section class="slide" data-time="4 min">
   <div class="slide-body">
@@ -810,7 +774,7 @@ Explique a consulta linha por linha para um iniciante.</div>
 </section>
 
 <!-- ============================================================ -->
-<!-- SLIDE 16 — ANEXAR ARQUIVOS (DEMO)                            -->
+<!-- SLIDE 15 — ANEXAR ARQUIVOS (DEMO)                            -->
 <!-- ============================================================ -->
 <section class="slide" data-time="4 min">
   <div class="slide-body">
@@ -844,7 +808,7 @@ destaques? Existe alguma tendência ou anomalia? Resuma para a diretoria.</div>
 </section>
 
 <!-- ============================================================ -->
-<!-- SLIDE 17 — ANÁLISE DE IMAGENS (DEMO)                         -->
+<!-- SLIDE 16 — ANÁLISE DE IMAGENS (DEMO)                         -->
 <!-- ============================================================ -->
 <section class="slide" data-time="3 min">
   <div class="slide-body">
@@ -869,7 +833,7 @@ destaques? Existe alguma tendência ou anomalia? Resuma para a diretoria.</div>
 </section>
 
 <!-- ============================================================ -->
-<!-- SLIDE 18 — PROMPTS AVANÇADOS                                 -->
+<!-- SLIDE 17 — PROMPTS AVANÇADOS                                 -->
 <!-- ============================================================ -->
 <section class="slide" data-time="3 min">
   <div class="slide-body">
@@ -899,7 +863,7 @@ destaques? Existe alguma tendência ou anomalia? Resuma para a diretoria.</div>
 </section>
 
 <!-- ============================================================ -->
-<!-- SLIDE 19 — SKILLS POUCO CONHECIDAS                           -->
+<!-- SLIDE 18 — SKILLS POUCO CONHECIDAS                           -->
 <!-- ============================================================ -->
 <section class="slide" data-time="3 min">
   <div class="slide-body">
@@ -933,7 +897,7 @@ destaques? Existe alguma tendência ou anomalia? Resuma para a diretoria.</div>
 </section>
 
 <!-- ============================================================ -->
-<!-- SLIDE 20 — SEGURANÇA                                         -->
+<!-- SLIDE 19 — SEGURANÇA                                         -->
 <!-- ============================================================ -->
 <section class="slide" data-time="2 min">
   <div class="slide-body">
@@ -961,20 +925,20 @@ destaques? Existe alguma tendência ou anomalia? Resuma para a diretoria.</div>
     <div data-k="Objetivo">Estabelecer as regras de segurança de forma clara e memorável, sem gerar medo paralisante.</div>
     <div data-k="O que falar">"Regra número 1: o que você digita ali sai da empresa. Então: senha, jamais. Dado bancário, jamais. CPF e documento de cliente, jamais. Precisa analisar um contrato real? Troca o nome por 'Cliente A' e remove os dados pessoais — a análise funciona igual. Regra número 2: a IA erra com muita confiança. Ela pode inventar um número, uma lei, um artigo. Quem assina o e-mail é você. Revisão humana SEMPRE."</div>
     <div data-k="Demonstração">Nenhuma. Este slide é de fala firme e pausada — desacelere o ritmo de propósito para marcar a importância.</div>
-    <div data-k="Transição">"Combinado? Então vamos fechar com o plano para você começar amanhã."</div>
+    <div data-k="Transição">"Combinado? Então vamos fechar com o plano para você começar hoje mesmo."</div>
   </aside>
 </section>
 
 <!-- ============================================================ -->
-<!-- SLIDE 21 — COMECE AMANHÃ + KIT                               -->
+<!-- SLIDE 20 — COMECE AGORA + KIT                               -->
 <!-- ============================================================ -->
 <section class="slide" data-time="2 min">
   <div class="slide-body">
     <div class="kicker">Seu plano de decolagem</div>
-    <h2>Comece <span class="grad">amanhã cedo</span></h2>
+    <h2>Comece <span class="grad">agora</span></h2>
     <ul class="biglist">
       <li><span class="b">1.</span> Crie sua conta gratuita <small>— chatgpt.com e claude.ai (5 minutos)</small></li>
-      <li><span class="b">2.</span> Escolha UMA tarefa chata da sua semana <small>— e-mail, resumo, planilha, ata…</small></li>
+      <li><span class="b">2.</span> Escolha UMA tarefa chata de hoje <small>— e-mail, resumo, planilha, ata…</small></li>
       <li><span class="b">3.</span> Use um prompt do kit e refine 3 vezes <small>— "mais curto", "mais formal", "em tabela"</small></li>
     </ul>
     <div class="qr-note">
@@ -983,14 +947,14 @@ destaques? Existe alguma tendência ou anomalia? Resuma para a diretoria.</div>
   </div>
   <aside class="notes">
     <div data-k="Objetivo">Converter inspiração em ação concreta com um plano de 3 passos e a entrega do kit.</div>
-    <div data-k="O que falar">"Não saiam daqui 'achando legal'. Saiam com missão: amanhã, escolham UMA tarefa chata — aquele e-mail difícil, aquela ata, aquele resumo — e resolvam com a IA usando um prompt do kit. Refinem 3 vezes. Em uma semana isso vira hábito, e hábito vira horas economizadas. O kit tem 30 prompts prontos, separados por área — é copiar, colar e adaptar."</div>
+    <div data-k="O que falar">"Não saiam daqui 'achando legal'. Saiam fazendo: ainda hoje, escolham UMA tarefa chata — aquele e-mail difícil, aquela ata, aquele resumo — e resolvam com a IA usando um prompt do kit. Criar a conta leva 5 minutos, dá pra fazer no intervalo. Refinem 3 vezes. Em uma semana isso vira hábito, e hábito vira horas economizadas. O kit tem 30 prompts prontos, separados por área — é copiar, colar e adaptar."</div>
     <div data-k="Demonstração">Abra rapidamente o arquivo kit-prompts.html na tela e role a página para o público ver o formato (prompts com botão de copiar). Informe como será distribuído (e-mail, intranet ou QR code).</div>
     <div data-k="Transição">"Agora é com vocês: dúvidas, casos reais, desafios — manda pra cá que a gente resolve ao vivo."</div>
   </aside>
 </section>
 
 <!-- ============================================================ -->
-<!-- SLIDE 22 — ENCERRAMENTO / PERGUNTAS                          -->
+<!-- SLIDE 21 — ENCERRAMENTO / PERGUNTAS                          -->
 <!-- ============================================================ -->
 <section class="slide center-slide" data-time="6 min">
   <div class="slide-body">
@@ -1005,7 +969,7 @@ destaques? Existe alguma tendência ou anomalia? Resuma para a diretoria.</div>
   </div>
   <aside class="notes">
     <div data-k="Objetivo">Fechar com energia alta e transformar o Q&amp;A em demonstração personalizada.</div>
-    <div data-k="O que falar">"Essa frase na tela é o resultado que eu queria: 'eu consigo começar hoje'. Agora o palco é de vocês. Quem tem uma tarefa real desta semana que quer ver resolvida agora? Pode falar que eu digito." Resolva 2 ou 3 casos reais da plateia ao vivo — é a parte mais memorável do treinamento. Encerre agradecendo e reforçando o desafio do dia seguinte.</div>
+    <div data-k="O que falar">"Essa frase na tela é o resultado que eu queria: 'eu consigo começar hoje'. Agora o palco é de vocês. Quem tem uma tarefa real desta semana que quer ver resolvida agora? Pode falar que eu digito." Resolva 2 ou 3 casos reais da plateia ao vivo — é a parte mais memorável do treinamento. Encerre agradecendo e reforçando o desafio de começar hoje mesmo.</div>
     <div data-k="Demonstração">Q&amp;A ao vivo: pegue pedidos da plateia e resolva no ChatGPT ou Claude na hora, aplicando a receita do prompt e os refinamentos ensinados.</div>
     <div data-k="Transição">Fim. Agradeça, informe novamente onde baixar o kit e se coloque à disposição para dúvidas individuais.</div>
   </aside>
@@ -1018,7 +982,7 @@ destaques? Existe alguma tendência ou anomalia? Resuma para a diretoria.</div>
   <div class="brand">Grupo Paraná · IA no Trabalho</div>
   <div class="center">
     <button id="btnPrev" title="Slide anterior">←</button>
-    <span class="counter" id="counter">1 / 22</span>
+    <span class="counter" id="counter">1 / 21</span>
     <button id="btnNext" title="Próximo slide">→</button>
     <button id="btnNotes" title="Notas do apresentador (N)">🗒 Notas</button>
     <button id="btnHelp" title="Atalhos (?)">?</button>
